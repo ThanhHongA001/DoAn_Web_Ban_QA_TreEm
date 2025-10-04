@@ -1,0 +1,173 @@
+/* Sử dụng flexbox để toàn bộ trang chiếm không gian và footer luôn ở cuối */
+html, body {
+    height: 100%;
+    margin: 0;
+    background-color: #fef3c7;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header cố định ở đầu trang */
+header {
+    background: linear-gradient(90deg, #6ee7b7 0%, #3b82f6 100%);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+}
+
+header a:hover {
+    color: #f472b6 !important;
+}
+
+/* Main content chiếm phần còn lại */
+main {
+    flex: 1 0 auto;
+    margin-left: 256px; /* Độ rộng sidebar */
+    padding-top: 80px; /* Chiều cao header */
+    padding-bottom: 20px; /* Khoảng cách dưới nội dung */
+}
+
+/* Sidebar cố định bên trái */
+aside {
+    position: fixed;
+    top: 80px; /* Chiều cao header */
+    left: 0;
+    width: 256px;
+    height: calc(100vh - 80px); /* Chiều cao toàn màn hình trừ header */
+    background-color: white;
+    padding: 1rem;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/* Footer cố định ở cuối trang */
+footer {
+    background: linear-gradient(90deg, #3b82f6 0%, #6ee7b7 100%);
+    flex-shrink: 0;
+    width: 100%;
+    margin-top: auto; /* Đẩy footer xuống dưới cùng */
+}
+
+footer a:hover {
+    color: #fde047 !important;
+}
+
+/* Search Suggestions */
+.search-suggestions {
+    max-height: calc(100vh - 200px); /* Giới hạn chiều cao dựa trên viewport, trừ header và khoảng cách */
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    z-index: 30;
+}
+
+.search-suggestions div {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.search-suggestions div:hover {
+    background-color: #f0f4f8;
+}
+
+/* Chat Box */
+#chat-box {
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat Messages */
+#chat-messages p {
+    background-color: #e0f2fe;
+    padding: 8px;
+    border-radius: 10px;
+    margin: 4px 0;
+}
+
+/* Product Card */
+.product-card img {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Discount Card */
+.discount-card {
+    background: linear-gradient(135deg, #ffedd5 0%, #fee2e2 100%);
+    border: 2px dashed #f87171;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.discount-card button {
+    background-color: #f87171;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.discount-card button:hover {
+    background-color: #ef4444;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    aside {
+        display: none; /* Ẩn sidebar trên màn hình nhỏ, có thể thêm toggle sau */
+    }
+    main {
+        margin-left: 0; /* Xóa margin khi sidebar ẩn */
+        padding-top: 72px; /* Điều chỉnh padding-top cho header nhỏ hơn */
+    }
+    .search-suggestions {
+        left: 0 !important; /* Đảm bảo search-suggestions hiển thị đúng trên mobile */
+        width: 100%;
+    }
+    footer {
+        margin-top: 20px; /* Đảm bảo footer không bị ép sát nội dung */
+    }
+}
+
+#payment-confirm-modal .bg-white {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive cho mobile */
+@media (max-width: 640px) {
+    #payment-confirm-modal > div {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+    
+    #payment-confirm-modal .flex.space-x-3 {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #payment-confirm-modal button {
+        width: 100%;
+    }
+}

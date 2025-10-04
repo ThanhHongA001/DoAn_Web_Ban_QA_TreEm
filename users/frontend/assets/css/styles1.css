@@ -1,0 +1,50 @@
+/* Header cố định ở đầu trang với gradient màu */
+header {
+    background: linear-gradient(90deg, #6ee7b7 0%, #3b82f6 100%);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+}
+
+header a:hover {
+    color: #f472b6 !important;
+}
+
+/* Footer với gradient màu */
+footer {
+    background: linear-gradient(90deg, #3b82f6 0%, #6ee7b7 100%);
+}
+
+footer a:hover {
+    color: #fde047 !important;
+}
+
+/* Search Suggestions */
+.search-suggestions {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    z-index: 30;
+}
+
+.search-suggestions div {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.search-suggestions div:hover {
+    background-color: #f0f4f8;
+}
+
+/* Responsive Design cho search suggestions */
+@media (max-width: 640px) {
+    .search-suggestions {
+        left: 0 !important;
+        width: 100%;
+    }
+}

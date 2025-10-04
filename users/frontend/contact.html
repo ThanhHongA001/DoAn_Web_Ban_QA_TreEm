@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liên hệ với SuSu Kids Shop để được hỗ trợ.">
+    <meta name="keywords" content="liên hệ, hỗ trợ khách hàng, chat, SuSu Kids Shop">
+    <title>Liên hệ - SuSu Kids Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-yellow-50 font-sans">
+    <!-- Header (giữ nguyên từ trước) -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+                <h1 class="ml-4 text-3xl font-bold text-blue-600">SuSu Kids Shop</h1>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Tìm quần áo cho bé..." class="p-2 pr-10 border border-blue-300 rounded-full w-72 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="fetchSearchSuggestions()" onkeypress="if(event.key === 'Enter') searchProducts()">
+                    <button onclick="searchProducts()" class="absolute right-2 top-2 text-blue-600 hover:text-blue-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    <div id="search-suggestions" class="absolute hidden bg-white border border-blue-300 rounded-lg w-full mt-1 shadow-lg z-10"></div>
+                </div>
+                <nav class="flex space-x-6">
+                    <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+                    <a href="about.html" class="text-blue-600 hover:text-pink-600 font-semibold">Giới thiệu</a>
+                    <a href="category.html" class="text-blue-600 hover:text-pink-600 font-semibold">Sản phẩm</a>
+                    <a href="blog.html" class="text-blue-600 hover:text-pink-600 font-semibold">Blog</a>
+                    <a href="contact.html" class="text-blue-600 hover:text-pink-600 font-semibold">Liên hệ</a>
+                    <a href="cart.html" class="relative">
+                        <svg class="w-6 h-6 text-blue-600 hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-1">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="user-menu-btn" class="text-blue-600 hover:text-pink-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </button>
+                        <div id="user-menu" class="absolute hidden right-0 mt-2 w-48 bg-white border border-blue-300 rounded-lg shadow-lg">
+                            <div id="guest-menu" class="py-2">
+                                <a href="login.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng nhập</a>
+                                <a href="register.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng ký</a>
+                            </div>
+                            <div id="user-settings-menu" class="hidden py-2">
+                                <a href="account.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Thông tin cá nhân</a>
+                                <a href="orders.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đơn hàng</a>
+                                <a href="change-password.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đổi mật khẩu</a>
+                                <a href="#" id="logout-btn" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb (giữ nguyên) -->
+    <div class="container mx-auto px-4 py-4 mt-24">
+        <nav class="text-gray-600 text-sm">
+            <a href="index.html" class="hover:text-blue-600">Trang chủ</a> / 
+            <span class="text-blue-600">Liên hệ</span>
+        </nav>
+    </div>
+
+    <!-- Contact Section (giữ nguyên) -->
+    <section class="container mx-auto px-4 py-8">
+        <div class="bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-blue-600 mb-6">Liên hệ với chúng tôi</h2>
+            <p class="text-gray-700 mb-6">Gửi tin nhắn, hình ảnh, video hoặc liên kết cho SuSu Kids Shop để được hỗ trợ nhanh chóng!</p>
+            
+            <!-- Chat Area -->
+            <div id="chat-container" class="bg-gray-50 p-4 rounded-lg max-h-[400px] overflow-y-auto mb-6">
+                <div id="messages" class="space-y-4"></div>
+                <p id="no-messages" class="text-gray-600 text-center hidden">Chưa có tin nhắn nào.</p>
+                <p id="login-prompt" class="text-gray-600 text-center">Vui lòng <a href="login.html" class="text-blue-600 hover:text-pink-600">đăng nhập</a> để gửi hoặc xem tin nhắn.</p>
+            </div>
+
+            <!-- Message Form -->
+            <div id="message-form" class="hidden">
+                <textarea id="message-input" class="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400" rows="4" placeholder="Nhập tin nhắn hoặc liên kết..."></textarea>
+                <div class="mt-4 flex items-center space-x-4">
+                    <label class="flex items-center text-blue-600 cursor-pointer">
+                        <input type="file" id="media-input" accept="image/*,video/*" class="hidden" onchange="previewMedia()">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        Tải lên hình ảnh/video
+                    </label>
+                    <div id="media-preview" class="flex space-x-2"></div>
+                </div>
+                <p id="message-error" class="text-red-600 text-sm mt-2 hidden">Vui lòng nhập tin nhắn hoặc chọn file.</p>
+                <div class="text-right mt-4">
+                    <button onclick="sendMessage()" class="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition">Gửi tin nhắn</button>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-blue-600 mb-4">Thông tin liên hệ</h3>
+                <p class="text-gray-700">Email: <a href="mailto:support@susukids.com" class="text-blue-600 hover:text-pink-600">support@susukids.com</a></p>
+                <p class="text-gray-700">Phone: <a href="tel:0905123456" class="text-blue-600 hover:text-pink-600">0905 123 456</a></p>
+                <p class="text-gray-700">Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Chatbox (thêm gợi ý FAQ) -->
+    <div id="chatbox" class="fixed bottom-4 right-4 w-80 bg-white rounded-lg shadow-lg z-50 hidden">
+    <div class="bg-blue-600 text-white p-3 rounded-t-lg flex justify-between items-center cursor-pointer" onclick="toggleChatbox()">
+        <h3 class="text-lg font-semibold">Chat với SuSu Kids</h3>
+        <button id="chatbox-toggle" class="text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path id="chatbox-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    </div>
+    <div id="chatbox-body" class="p-4">
+        <div class="text-xs text-gray-500 mb-2">💡 Hỏi tôi về giá, kích thước, giao hàng... để được trả lời tự động!</div>
+        <div id="chatbox-messages" class="max-h-64 overflow-y-auto mb-4 space-y-4"></div>
+        <p id="chatbox-no-messages" class="text-gray-600 text-center hidden">Chưa có tin nhắn nào.</p>
+        <p id="chatbox-login-prompt" class="text-gray-600 text-center">Vui lòng <a href="login.html" class="text-blue-600 hover:text-pink-600">đăng nhập</a> để chat.</p>
+        <div id="chatbox-form" class="hidden">
+            <textarea id="chatbox-message-input" class="w-full p-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400" rows="3" placeholder="Nhập tin nhắn hoặc liên kết..."></textarea>
+            <div class="mt-2 flex items-center space-x-4">
+                <label class="flex items-center text-blue-600 cursor-pointer">
+                    <input type="file" id="chatbox-media-input" accept="image/*,video/*" class="hidden" onchange="previewChatboxMedia()">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    Hình/Video
+                </label>
+                <div id="chatbox-media-preview" class="flex space-x-2"></div>
+            </div>
+            <p id="chatbox-message-error" class="text-red-600 text-sm mt-2 hidden">Vui lòng nhập tin nhắn hoặc chọn file.</p>
+            <div class="text-right mt-2">
+                <button onclick="sendChatboxMessage()" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">Gửi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<button id="chatbox-open-btn" class="fixed bottom-4 right-4 bg-[#F50057] text-white p-3 rounded-full shadow-lg z-50" onclick="toggleChatbox()">
+    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+        <path d="M9 11h2v2H9zm4 0h2v2h-2zm-4-4h2v2H9zm4 0h2v2h-2z"/>
+    </svg>
+</button>
+    <!-- Footer (giữ nguyên) -->
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/user-menu.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            updateCartCount();
+        });
+
+        // Các hàm khác giữ nguyên (fetchSearchSuggestions, searchProducts, checkSession, toggleChatbox, previewMedia, previewChatboxMedia, createMessageElement)
+
+        function fetchSearchSuggestions() {
+            const query = document.getElementById('search-input').value.trim();
+            const suggestionsDiv = document.getElementById('search-suggestions');
+            if (query.length < 2) {
+                suggestionsDiv.classList.add('hidden');
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+            fetch(`/backend/api/search_products.php?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsDiv.innerHTML = '';
+                    if (data.length > 0) {
+                        suggestionsDiv.classList.remove('hidden');
+                        data.forEach(product => {
+                            const div = document.createElement('div');
+                            div.className = 'flex items-center px-4 py-2 text-blue-600 cursor-pointer hover:bg-blue-50';
+                            div.innerHTML = `
+                                <img src="${product.image}" alt="${product.name}" class="w-10 h-10 rounded mr-2 object-cover">
+                                <div>
+                                    <p>${product.name}</p>
+                                    <p class="text-pink-600">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.discounted_price)}</p>
+                                </div>
+                            `;
+                            div.onclick = () => window.location.href = `product-details.html?code=${product.code}`;
+                            suggestionsDiv.appendChild(div);
+                        });
+                    } else {
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error fetching suggestions:', error));
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('search-input').value.trim();
+            window.location.href = `category.html?q=${encodeURIComponent(query)}`;
+        }
+
+        function checkSession() {
+            fetch('api/check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isLoggedIn) {
+                        document.getElementById('login-prompt').classList.add('hidden');
+                        document.getElementById('message-form').classList.remove('hidden');
+                        document.getElementById('chatbox-login-prompt').classList.add('hidden');
+                        document.getElementById('chatbox-form').classList.remove('hidden');
+                        loadMessages();
+                        loadChatboxMessages();
+                    } else {
+                        document.getElementById('login-prompt').classList.remove('hidden');
+                        document.getElementById('message-form').classList.add('hidden');
+                        document.getElementById('chatbox-login-prompt').classList.remove('hidden');
+                        document.getElementById('chatbox-form').classList.add('hidden');
+                        document.getElementById('messages').innerHTML = '';
+                        document.getElementById('no-messages').classList.add('hidden');
+                        document.getElementById('chatbox-messages').innerHTML = '';
+                        document.getElementById('chatbox-no-messages').classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking session:', error);
+                    document.getElementById('login-prompt').classList.remove('hidden');
+                    document.getElementById('message-form').classList.add('hidden');
+                    document.getElementById('chatbox-login-prompt').classList.remove('hidden');
+                    document.getElementById('chatbox-form').classList.add('hidden');
+                    document.getElementById('messages').innerHTML = '';
+                    document.getElementById('no-messages').classList.remove('hidden');
+                    document.getElementById('chatbox-messages').innerHTML = '';
+                    document.getElementById('chatbox-no-messages').classList.remove('hidden');
+                });
+        }
+
+        function toggleChatbox() {
+            const chatbox = document.getElementById('chatbox');
+            const chatboxBody = document.getElementById('chatbox-body');
+            const chatboxIcon = document.getElementById('chatbox-icon');
+            const openBtn = document.getElementById('chatbox-open-btn');
+            if (chatbox.classList.contains('hidden')) {
+                chatbox.classList.remove('hidden');
+                openBtn.classList.add('hidden');
+                chatboxIcon.setAttribute('d', 'M19 9l-7 7-7-7');
+            } else {
+                chatboxBody.classList.toggle('hidden');
+                chatboxIcon.setAttribute('d', chatboxBody.classList.contains('hidden') ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7');
+            }
+        }
+
+        function previewMedia() {
+            const mediaInput = document.getElementById('media-input');
+            const mediaPreview = document.getElementById('media-preview');
+            mediaPreview.innerHTML = '';
+            const files = mediaInput.files;
+
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    const fileType = file.type.split('/')[0];
+                    const previewElement = document.createElement('div');
+                    previewElement.className = 'relative w-20 h-20';
+
+                    if (fileType === 'image') {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.className = 'w-full h-full object-cover rounded';
+                        previewElement.appendChild(img);
+                    } else if (fileType === 'video') {
+                        const video = document.createElement('video');
+                        video.src = URL.createObjectURL(file);
+                        video.className = 'w-full h-full object-cover rounded';
+                        video.controls = true;
+                        previewElement.appendChild(video);
+                    }
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '×';
+                    removeBtn.className = 'absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center';
+                    removeBtn.onclick = () => {
+                        previewElement.remove();
+                        mediaInput.value = '';
+                    };
+                    previewElement.appendChild(removeBtn);
+                    mediaPreview.appendChild(previewElement);
+                });
+            }
+        }
+
+        function previewChatboxMedia() {
+            const mediaInput = document.getElementById('chatbox-media-input');
+            const mediaPreview = document.getElementById('chatbox-media-preview');
+            mediaPreview.innerHTML = '';
+            const files = mediaInput.files;
+
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    const fileType = file.type.split('/')[0];
+                    const previewElement = document.createElement('div');
+                    previewElement.className = 'relative w-16 h-16';
+
+                    if (fileType === 'image') {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.className = 'w-full h-full object-cover rounded';
+                        previewElement.appendChild(img);
+                    } else if (fileType === 'video') {
+                        const video = document.createElement('video');
+                        video.src = URL.createObjectURL(file);
+                        video.className = 'w-full h-full object-cover rounded';
+                        video.controls = true;
+                        previewElement.appendChild(video);
+                    }
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '×';
+                    removeBtn.className = 'absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs';
+                    removeBtn.onclick = () => {
+                        previewElement.remove();
+                        mediaInput.value = '';
+                    };
+                    previewElement.appendChild(removeBtn);
+                    mediaPreview.appendChild(previewElement);
+                });
+            }
+        }
+
+        function createMessageElement(message, container = 'messages') {
+            const messageElement = document.createElement('div');
+            const isUser = message.sender === 'user';
+            messageElement.className = `flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`;
+            const date = new Date(message.created_at).toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let content = '';
+            if (message.media_type === 'image') {
+                content = `<img src="${message.media_url}" alt="Image" class="max-w-[${container === 'chatbox-messages' ? '150px' : '200px'}] rounded mt-2">`;
+            } else if (message.media_type === 'video') {
+                content = `<video src="${message.media_url}" controls class="max-w-[${container === 'chatbox-messages' ? '150px' : '200px'}] rounded mt-2"></video>`;
+            } else if (message.media_type === 'link') {
+                content = `<a href="${message.message}" target="_blank" class="text-blue-600 underline">${message.message}</a>`;
+            } else {
+                content = `<p>${message.message}</p>`;
+            }
+
+            messageElement.innerHTML = `
+                <div class="${isUser ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'} p-3 rounded-lg max-w-[${container === 'chatbox-messages' ? '60%' : '70%'}]">
+                    ${content}
+                    <p class="text-xs text-gray-500 mt-1">${date}</p>
+                </div>
+            `;
+            return messageElement;
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const mediaInput = document.getElementById('media-input');
+            const messageError = document.getElementById('message-error');
+            const message = messageInput.value.trim();
+            const files = mediaInput.files;
+
+            if (!message && files.length === 0) {
+                messageError.textContent = 'Vui lòng nhập tin nhắn hoặc chọn file.';
+                messageError.classList.remove('hidden');
+                return;
+            }
+
+            messageError.classList.add('hidden');
+            const formData = new FormData();
+            if (message) {
+                formData.append('message', message);
+            }
+            if (files.length > 0) {
+                formData.append('media', files[0]);
+            }
+
+            fetch('api/contact.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        messageError.textContent = data.error;
+                        messageError.classList.remove('hidden');
+                        return;
+                    }
+                    messageInput.value = '';
+                    mediaInput.value = '';
+                    document.getElementById('media-preview').innerHTML = '';
+                    // Reload messages to show auto-response
+                    loadMessages();
+                    loadChatboxMessages();
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                    messageError.textContent = 'Lỗi khi gửi tin nhắn.';
+                    messageError.classList.remove('hidden');
+                });
+        }
+
+        function sendChatboxMessage() {
+            const messageInput = document.getElementById('chatbox-message-input');
+            const mediaInput = document.getElementById('chatbox-media-input');
+            const messageError = document.getElementById('chatbox-message-error');
+            const message = messageInput.value.trim();
+            const files = mediaInput.files;
+
+            if (!message && files.length === 0) {
+                messageError.textContent = 'Vui lòng nhập tin nhắn hoặc chọn file.';
+                messageError.classList.remove('hidden');
+                return;
+            }
+
+            messageError.classList.add('hidden');
+            const formData = new FormData();
+            if (message) {
+                formData.append('message', message);
+            }
+            if (files.length > 0) {
+                formData.append('media', files[0]);
+            }
+
+            fetch('api/contact.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        messageError.textContent = data.error;
+                        messageError.classList.remove('hidden');
+                        return;
+                    }
+                    messageInput.value = '';
+                    mediaInput.value = '';
+                    document.getElementById('chatbox-media-preview').innerHTML = '';
+                    // Reload messages to show auto-response
+                    loadMessages();
+                    loadChatboxMessages();
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                    messageError.textContent = 'Lỗi khi gửi tin nhắn.';
+                    messageError.classList.remove('hidden');
+                });
+        }
+
+        function loadMessages() {
+            const messagesContainer = document.getElementById('messages');
+            const noMessages = document.getElementById('no-messages');
+
+            fetch('api/contact.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching messages:', data.error);
+                        messagesContainer.innerHTML = '';
+                        noMessages.textContent = data.error;
+                        noMessages.classList.remove('hidden');
+                        return;
+                    }
+
+                    if (data.length === 0) {
+                        messagesContainer.innerHTML = '';
+                        noMessages.textContent = 'Chưa có tin nhắn nào.';
+                        noMessages.classList.remove('hidden');
+                        return;
+                    }
+
+                    noMessages.classList.add('hidden');
+                    messagesContainer.innerHTML = '';
+                    data.forEach(message => {
+                        const messageElement = createMessageElement(message, 'messages');
+                        messagesContainer.appendChild(messageElement);
+                    });
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                    messagesContainer.innerHTML = '';
+                    noMessages.textContent = 'Lỗi khi tải tin nhắn.';
+                    noMessages.classList.remove('hidden');
+                });
+        }
+
+        function loadChatboxMessages() {
+            const messagesContainer = document.getElementById('chatbox-messages');
+            const noMessages = document.getElementById('chatbox-no-messages');
+
+            fetch('api/contact.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching messages:', data.error);
+                        messagesContainer.innerHTML = '';
+                        noMessages.textContent = data.error;
+                        noMessages.classList.remove('hidden');
+                        return;
+                    }
+
+                    if (data.length === 0) {
+                        messagesContainer.innerHTML = '';
+                        noMessages.textContent = 'Chưa có tin nhắn nào.';
+                        noMessages.classList.remove('hidden');
+                        return;
+                    }
+
+                    noMessages.classList.add('hidden');
+                    messagesContainer.innerHTML = '';
+                    data.forEach(message => {
+                        const messageElement = createMessageElement(message, 'chatbox-messages');
+                        messagesContainer.appendChild(messageElement);
+                    });
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                    messagesContainer.innerHTML = '';
+                    noMessages.textContent = 'Lỗi khi tải tin nhắn.';
+                    noMessages.classList.remove('hidden');
+                });
+        }
+
+        //logo
+        fetch("api/get_logo.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("site-logo").src = data.logo;
+        })
+        .catch(err => console.error(err)); 
+    </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý biến thể sản phẩm - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-users.html" class="hover:underline">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold mb-4">Quản lý biến thể sản phẩm</h2>
+        <div class="mb-4 flex space-x-4">
+            <input type="text" id="variant-search" class="border p-2 rounded w-full" placeholder="Tìm kiếm biến thể...">
+            <select id="product-filter" class="border p-2 rounded">
+                <option value="">Tất cả sản phẩm</option>
+            </select>
+        </div>
+        <button onclick="openAddVariantModal()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Thêm biến thể</button>
+        <table class="w-full bg-white shadow rounded">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-2">Tên sản phẩm</th>
+                    <th class="p-2">Mã sản phẩm</th>
+                    <th class="p-2">Kích thước</th>
+                    <th class="p-2">Màu sắc</th>
+                    <th class="p-2">Số lượng</th>
+                    <th class="p-2">Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="variant-table"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Add/Edit Variant -->
+    <div id="variant-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Thêm biến thể</h3>
+            <form id="variant-form">
+                <div class="mb-4">
+                    <label for="variant-product-code" class="block text-gray-700 font-bold mb-2">Mã sản phẩm</label>
+                    <select id="variant-product-code" name="product_code" class="w-full p-2 border rounded" required>
+                        <option value="">Chọn sản phẩm</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="variant-size" class="block text-gray-700 font-bold mb-2">Kích thước</label>
+                    <input type="text" id="variant-size" name="size" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="variant-color" class="block text-gray-700 font-bold mb-2">Màu sắc</label>
+                    <input type="text" id="variant-color" name="color" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="variant-stock" class="block text-gray-700 font-bold mb-2">Số lượng</label>
+                    <input type="number" id="variant-stock" name="stock" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeVariantModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Hủy</button>
+                    <button type="submit" id="save-variant-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Lưu</button>
+                </div>
+                <input type="hidden" id="variant-id" name="id">
+                <input type="hidden" id="variant-action" name="action" value="add">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        async function loadProductsForVariants() {
+            try {
+                const response = await fetch('admin-api/products/list.php');
+                const data = await response.json();
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Lỗi tải sản phẩm');
+                }
+                const select = document.getElementById('variant-product-code');
+                const filter = document.getElementById('product-filter');
+                select.innerHTML = '<option value="">Chọn sản phẩm</option>';
+                filter.innerHTML = '<option value="">Tất cả sản phẩm</option>';
+                data.products.forEach(product => {
+                    select.innerHTML += `<option value="${product.code}">${product.code} - ${product.name}</option>`;
+                    filter.innerHTML += `<option value="${product.code}">${product.code} - ${product.name}</option>`;
+                });
+            } catch (error) {
+                console.error('Lỗi tải sản phẩm:', error);
+                alert('Lỗi tải sản phẩm: ' + error.message);
+            }
+        }
+
+        async function loadVariants(search = '', product_code = '') {
+            if (isLoading) return;
+            isLoading = true;
+            try {
+                const response = await fetch(`admin-api/variants/list.php?search=${encodeURIComponent(search)}&product_code=${product_code || ''}`);
+                const data = await response.json();
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Lỗi tải biến thể');
+                }
+                const tableBody = document.getElementById('variant-table');
+                tableBody.innerHTML = '';
+                data.variants.forEach(variant => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td class="p-2">${variant.product_name}</td>
+                            <td class="p-2">${variant.product_code}</td>
+                            <td class="p-2">${variant.size}</td>
+                            <td class="p-2">${variant.color}</td>
+                            <td class="p-2">${variant.stock}</td>
+                            <td class="p-2">
+                                <button onclick="openEditVariantModal(${variant.id}, '${variant.product_code}', '${variant.size}', '${variant.color}', ${variant.stock})" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Sửa</button>
+                                <button onclick="deleteVariant(${variant.id})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Lỗi tải biến thể:', error);
+                alert('Lỗi tải biến thể: ' + error.message);
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function openAddVariantModal() {
+            document.getElementById('modal-title').textContent = 'Thêm biến thể';
+            document.getElementById('variant-form').reset();
+            document.getElementById('variant-id').value = '';
+            document.getElementById('variant-action').value = 'add';
+            document.getElementById('variant-modal').classList.remove('hidden');
+            loadProductsForVariants();
+        }
+
+        function openEditVariantModal(id, product_code, size, color, stock) {
+            document.getElementById('modal-title').textContent = 'Sửa biến thể';
+            document.getElementById('variant-id').value = id;
+            document.getElementById('variant-product-code').value = product_code;
+            document.getElementById('variant-size').value = size;
+            document.getElementById('variant-color').value = color;
+            document.getElementById('variant-stock').value = stock;
+            document.getElementById('variant-action').value = 'edit';
+            document.getElementById('variant-modal').classList.remove('hidden');
+            loadProductsForVariants();
+        }
+
+        function closeVariantModal() {
+            document.getElementById('variant-modal').classList.add('hidden');
+        }
+
+        async function deleteVariant(id) {
+            if (!confirm('Bạn có chắc muốn xóa biến thể này?')) return;
+            try {
+                const response = await fetch('admin-api/variants/delete.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert('Xóa biến thể thành công');
+                    loadVariants(document.getElementById('variant-search').value, document.getElementById('product-filter').value);
+                } else {
+                    alert(data.message || 'Xóa biến thể thất bại');
+                }
+            } catch (error) {
+                console.error('Lỗi xóa biến thể:', error);
+                alert('Lỗi xóa biến thể: ' + error.message);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function initializeEventListeners() {
+            const variantSearch = document.getElementById('variant-search');
+            const productFilter = document.getElementById('product-filter');
+            const variantForm = document.getElementById('variant-form');
+
+            const debouncedLoadVariants = debounce((search, product_code) => {
+                loadVariants(search, product_code);
+            }, 300);
+
+            variantSearch.addEventListener('input', (e) => {
+                debouncedLoadVariants(e.target.value, productFilter.value);
+            });
+
+            productFilter.addEventListener('change', (e) => {
+                debouncedLoadVariants(variantSearch.value, e.target.value);
+            });
+
+            variantForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const action = document.getElementById('variant-action').value;
+                const id = document.getElementById('variant-id').value;
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('product_code', document.getElementById('variant-product-code').value);
+                formData.append('size', document.getElementById('variant-size').value);
+                formData.append('color', document.getElementById('variant-color').value);
+                formData.append('stock', document.getElementById('variant-stock').value);
+
+                try {
+                    let url = '';
+                    if (action === 'add') {
+                        url = 'admin-api/variants/create.php';
+                    } else if (action === 'edit') {
+                        url = 'admin-api/variants/update.php';
+                    } else {
+                        alert('Hành động không hợp lệ');
+                        return;
+                    }
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        alert(action === 'add' ? 'Thêm biến thể thành công' : 'Cập nhật biến thể thành công');
+                        closeVariantModal();
+                        loadVariants(variantSearch.value, productFilter.value);
+                    } else {
+                        alert(data.message || 'Lỗi khi lưu biến thể');
+                    }
+                } catch (error) {
+                    console.error('Lỗi lưu biến thể:', error);
+                    alert('Lỗi lưu biến thể: ' + error.message);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventListeners();
+            loadProductsForVariants().then(() => loadVariants());
+        });
+    </script>
+</body>
+</html>

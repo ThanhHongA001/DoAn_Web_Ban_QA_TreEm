@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog thời trang trẻ em - SuSu Kids Shop.">
+    <meta name="keywords" content="blog, thời trang trẻ em, mẹo chọn quần áo">
+    <title>Blog - SuSu Kids Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-yellow-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+                <h1 class="ml-4 text-3xl font-bold text-blue-600">SuSu Kids Shop</h1>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Tìm bài viết..." class="p-2 pr-10 border border-blue-300 rounded-full w-72 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="fetchBlogSearchSuggestions()" onkeypress="if(event.key === 'Enter') searchBlogPosts()">
+                    <button onclick="searchBlogPosts()" class="absolute right-2 top-2 text-blue-600 hover:text-blue-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    <div id="search-suggestions" class="absolute hidden bg-white border border-blue-300 rounded-lg w-full mt-1 shadow-lg z-10"></div>
+                </div>
+                <nav class="flex space-x-6">
+                    <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+                    <a href="about.html" class="text-blue-600 hover:text-pink-600 font-semibold">Giới thiệu</a>
+                    <a href="category.html" class="text-blue-600 hover:text-pink-600 font-semibold">Sản phẩm</a>
+                    <a href="blog.html" class="text-blue-600 hover:text-pink-600 font-semibold">Blog</a>
+                    <a href="contact.html" class="text-blue-600 hover:text-pink-600 font-semibold">Liên hệ</a>
+                    <a href="cart.html" class="relative">
+                        <svg class="w-6 h-6 text-blue-600 hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-1">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="user-menu-btn" class="text-blue-600 hover:text-pink-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </button>
+                        <div id="user-menu" class="absolute hidden right-0 mt-2 w-48 bg-white border border-blue-300 rounded-lg shadow-lg">
+                            <div id="guest-menu" class="py-2">
+                                <a href="login.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng nhập</a>
+                                <a href="register.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng ký</a>
+                            </div>
+                            <div id="user-settings-menu" class="hidden py-2">
+                                <a href="account.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Thông tin cá nhân</a>
+                                <a href="orders.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đơn hàng</a>
+                                <a href="change-password.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đổi mật khẩu</a>
+                                <a href="#" id="logout-btn" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-4 py-4 mt-24">
+        <nav class="text-gray-600 text-sm">
+            <a href="index.html" class="hover:text-blue-600">Trang chủ</a> / 
+            <span class="text-blue-600">Blog</span>
+        </nav>
+    </div>
+
+    <!-- Blog Section -->
+    <section class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-center text-blue-600 mb-8">Blog thời trang trẻ em</h2>
+        <div class="mb-6 flex justify-center">
+            <input type="text" id="blog-search" placeholder="Tìm kiếm bài viết..." class="p-2 border border-blue-300 rounded-lg w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="fetchBlogPosts()">
+        </div>
+        <div id="blog-posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="no-posts" class="hidden text-center text-gray-600 mt-4">Không tìm thấy bài viết nào.</div>
+        <div class="mt-8 flex justify-center space-x-4">
+            <button id="prev-page" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50" disabled onclick="changePage(-1)">Trang trước</button>
+            <span id="page-info" class="text-blue-600 font-semibold"></span>
+            <button id="next-page" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" onclick="changePage(1)">Trang sau</button>
+        </div>
+    </section>
+
+    <!-- Post Details Modal -->
+    <div id="post-details-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-20">
+        <div class="bg-white p-8 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            <h2 id="post-title" class="text-2xl font-bold text-blue-600 mb-4"></h2>
+            <div id="post-details-content"></div>
+            <button onclick="closeModal()" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">Đóng</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/user-menu.js"></script>
+    <script>
+        let currentPage = 1;
+        const postsPerPage = 6;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            fetchCartCount();
+            fetchBlogPosts();
+        });
+
+        function checkLoginStatus() {
+            fetch('api/check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    // Update user menu via user-menu.js
+                })
+                .catch(error => console.error('Error checking login status:', error));
+        }
+
+        function fetchCartCount() {
+            fetch('api/cart.php?action=count')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cart-count').textContent = data.count || 0;
+                })
+                .catch(error => console.error('Error fetching cart count:', error));
+        }
+
+        function fetchBlogSearchSuggestions() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const suggestionsDiv = document.getElementById('search-suggestions');
+            if (query.length < 2) {
+                suggestionsDiv.classList.add('hidden');
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+
+            fetch(`api/blog/get_suggestions.php?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(posts => {
+                    suggestionsDiv.innerHTML = '';
+                    if (posts.length > 0) {
+                        suggestionsDiv.classList.remove('hidden');
+                        posts.forEach(post => {
+                            const div = document.createElement('div');
+                            div.className = 'px-4 py-2 text-blue-600 cursor-pointer hover:bg-blue-50';
+                            div.innerHTML = `
+                                <p>${post.title}</p>
+                                <p class="text-gray-600 text-sm">${new Date(post.created_at).toLocaleDateString('vi-VN')}</p>
+                            `;
+                            div.onclick = () => viewPostDetails(post.id);
+                            suggestionsDiv.appendChild(div);
+                        });
+                    } else {
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    suggestionsDiv.classList.add('hidden');
+                });
+        }
+
+        function searchBlogPosts() {
+            currentPage = 1;
+            fetchBlogPosts();
+        }
+
+        function fetchBlogPosts() {
+            const query = document.getElementById('blog-search').value.trim().toLowerCase();
+            const blogPosts = document.getElementById('blog-posts');
+            const noPosts = document.getElementById('no-posts');
+            blogPosts.innerHTML = '<p class="text-center text-gray-600">Đang tải...</p>';
+
+            fetch(`api/blog/get_posts.php?query=${encodeURIComponent(query)}&page=${currentPage}`)
+                .then(response => response.json())
+                .then(data => {
+                    blogPosts.innerHTML = '';
+                    const totalPages = Math.max(1, Math.ceil(data.totalPosts / data.postsPerPage));
+
+                    if (data.posts.length === 0) {
+                        noPosts.classList.remove('hidden');
+                        document.getElementById('prev-page').disabled = true;
+                        document.getElementById('next-page').disabled = true;
+                        document.getElementById('page-info').textContent = 'Trang 1 / 1';
+                        return;
+                    }
+
+                    noPosts.classList.add('hidden');
+                    data.posts.forEach(post => {
+                        const div = document.createElement('div');
+                        div.className = 'bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition';
+                        div.innerHTML = `
+                            <img src="${post.image}" alt="${post.title}" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <h3 class="text-xl font-semibold text-blue-600 mb-2">${post.title}</h3>
+                            <p class="text-gray-600 mb-2">${post.summary}</p>
+                            <p class="text-sm text-gray-500 mb-4">${new Date(post.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+                            <button onclick="viewPostDetails(${post.id})" class="text-blue-600 hover:text-blue-800 underline">Đọc thêm</button>
+                        `;
+                        blogPosts.appendChild(div);
+                    });
+
+                    document.getElementById('page-info').textContent = `Trang ${currentPage} / ${totalPages}`;
+                    document.getElementById('prev-page').disabled = currentPage === 1;
+                    document.getElementById('next-page').disabled = currentPage === totalPages;
+                })
+                .catch(error => {
+                    console.error('Error fetching posts:', error);
+                    blogPosts.innerHTML = '';
+                    noPosts.classList.remove('hidden');
+                });
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            if (currentPage < 1) currentPage = 1;
+            fetchBlogPosts();
+        }
+
+        function viewPostDetails(postId) {
+            fetch(`api/blog/get_posts.php?query=&page=1`)
+                .then(response => response.json())
+                .then(data => {
+                    const post = data.posts.find(p => p.id == postId);
+                    if (!post) {
+                        alert('Không tìm thấy bài viết');
+                        return;
+                    }
+
+                    document.getElementById('post-title').textContent = post.title;
+                    document.getElementById('post-details-content').innerHTML = `
+                        <img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-lg mb-4">
+                        <p class="text-gray-500 mb-2">Đăng ngày: ${new Date(post.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+                        <p class="text-gray-500 mb-4">Tác giả: ${post.author_name}</p>
+                        <div class="text-gray-800 prose">${post.content}</div>
+                    `;
+                    document.getElementById('post-details-modal').classList.remove('hidden');
+                })
+                .catch(error => console.error('Error fetching post details:', error));
+        }
+
+        function closeModal() {
+            document.getElementById('post-details-modal').classList.add('hidden');
+        }
+
+        fetch("api/get_logo.php")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("site-logo").src = data.logo;
+            })
+            .catch(err => console.error(err));
+    </script>
+</body>
+</html>

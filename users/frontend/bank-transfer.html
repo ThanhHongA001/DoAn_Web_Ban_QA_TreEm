@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán chuyển khoản - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-yellow-50 font-sans">
+    <header class="bg-white shadow-md fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+                <h1 class="ml-4 text-3xl font-bold text-blue-600">SuSu Kids Shop</h1>
+            </div>
+            <a href="orders.html" class="text-blue-600 hover:text-pink-600 font-semibold">Quay lại</a>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 mt-24">
+        <h2 class="text-3xl font-bold text-center text-blue-600 mb-6">Thanh toán qua chuyển khoản</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+            <p class="text-gray-600 mb-4">Vui lòng quét mã QR dưới đây để thanh toán. Số tiền cần thanh toán sẽ được tự động xác nhận sau khi giao dịch thành công.</p>
+            <p class="text-xl font-semibold text-blue-600 mb-4"><strong>Số tiền:</strong> <span id="total-amount"></span></p>
+            <img src="assets/images/sample-qr-code.png" alt="QR Code" class="mx-auto mb-4 w-64 h-64 object-contain">
+            <p class="text-gray-600 mb-4">Thông tin tài khoản:</p>
+            <p class="text-gray-600">Ngân hàng: Techcombank</p>
+            <p class="text-gray-600">Số tài khoản: 19030789012345</p>
+            <p class="text-gray-600">Chủ tài khoản: SuSu Kids Shop</p>
+            <p class="text-red-600 mb-4">Lưu ý: Vui lòng ghi rõ mã đơn hàng trong nội dung chuyển khoản.</p>
+            <button onclick="confirmPayment()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">Xác nhận thanh toán</button>
+        </div>
+    </div>
+
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const total = urlParams.get('total');
+            const orderId = urlParams.get('order_id');
+            document.getElementById('total-amount').textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
+            document.getElementById('order-id').value = orderId; // Hidden input for form submission
+        });
+
+        function confirmPayment() {
+            const orderId = document.getElementById('order-id').value;
+            fetch(`api/orders.php?action=confirm_payment&order_id=${orderId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Thanh toán đã được xác nhận. Đơn hàng sẽ được xử lý.');
+                        window.location.href = 'orders.html';
+                    } else {
+                        alert(data.error || 'Xác nhận thanh toán thất bại');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error confirming payment:', error);
+                    alert('Lỗi khi xác nhận thanh toán');
+                });
+        }
+
+        fetch("api/get_logo.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("site-logo").src = data.logo;
+        })
+        .catch(err => console.error(err));
+    </script>
+    <input type="hidden" id="order-id" name="order-id">
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chính sách đổi trả của SuSu Kids Shop - Quy trình đổi trả sản phẩm.">
+    <meta name="keywords" content="chính sách đổi trả, thời trang trẻ em, SuSu Kids">
+    <title>Chính sách đổi trả - SuSu Kids Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-yellow-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+                <h1 class="ml-4 text-3xl font-bold text-blue-600">SuSu Kids Shop</h1>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Tìm quần áo cho bé..." class="p-2 pr-10 border border-blue-300 rounded-full w-72 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="fetchSearchSuggestions()" onkeypress="if(event.key === 'Enter') searchProducts()">
+                    <button onclick="searchProducts()" class="absolute right-2 top-2 text-blue-600 hover:text-blue-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    <div id="search-suggestions" class="absolute hidden bg-white border border-blue-300 rounded-lg w-full mt-1 shadow-lg z-10"></div>
+                </div>
+                <nav class="flex space-x-6">
+                    <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+                    <a href="about.html" class="text-blue-600 hover:text-pink-600 font-semibold">Giới thiệu</a>
+                    <a href="category.html" class="text-blue-600 hover:text-pink-600 font-semibold">Sản phẩm</a>
+                    <a href="blog.html" class="text-blue-600 hover:text-pink-600 font-semibold">Blog</a>
+                    <a href="contact.html" class="text-blue-600 hover:text-pink-600 font-semibold">Liên hệ</a>
+                    <a href="cart.html" class="relative">
+                        <svg class="w-6 h-6 text-blue-600 hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-1">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="user-menu-btn" class="text-blue-600 hover:text-pink-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </button>
+                        <div id="user-menu" class="absolute hidden right-0 mt-2 w-48 bg-white border border-blue-300 rounded-lg shadow-lg">
+                            <div id="guest-menu" class="py-2">
+                                <a href="login.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng nhập</a>
+                                <a href="register.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng ký</a>
+                            </div>
+                            <div id="user-settings-menu" class="hidden py-2">
+                                <a href="account.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Thông tin cá nhân</a>
+                                <a href="orders.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đơn hàng</a>
+                                <a href="size.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Hướng dẫn chọn size</a>
+                                <a href="change-password.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đổi mật khẩu</a>
+                                <a href="#" id="logout-btn" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-4 py-4 mt-24">
+        <nav class="text-gray-600 text-sm">
+            <a href="index.html" class="hover:text-blue-600">Trang chủ</a> / 
+            <span class="text-blue-600">Chính sách đổi trả</span>
+        </nav>
+    </div>
+
+    <!-- Return Policy Section -->
+    <section class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-center text-blue-600 mb-8">Chính sách đổi trả</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <p id="introduction" class="text-gray-600 mb-4"></p>
+        </div>
+
+        <!-- Conditions -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 id="conditions-title" class="text-2xl font-semibold text-blue-600 mb-4"></h3>
+            <div id="conditions-content" class="text-gray-600 prose"></div>
+        </div>
+
+        <!-- Process -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 id="process-title" class="text-2xl font-semibold text-blue-600 mb-4"></h3>
+            <div id="process-content" class="text-gray-600 prose"></div>
+        </div>
+
+        <!-- Refund Methods -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 id="refund-methods-title" class="text-2xl font-semibold text-blue-600 mb-4"></h3>
+            <div id="refund-methods-content" class="text-gray-600 prose"></div>
+        </div>
+
+        <!-- Contact -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 id="contact-title" class="text-2xl font-semibold text-blue-600 mb-4"></h3>
+            <div id="contact-content" class="text-gray-600 prose"></div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center mt-8">
+            <a href="contact.html" class="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition">Liên hệ để đổi trả</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/user-menu.js"></script>
+    <script>
+        // Mock return policy data
+        const returnPolicyData = {
+            introduction: "Tại SuSu Kids Shop, chúng tôi cam kết mang đến trải nghiệm mua sắm hài lòng nhất. Chính sách đổi trả này được thiết kế để đảm bảo quyền lợi của khách hàng khi mua sắm tại website hoặc cửa hàng của chúng tôi.",
+            conditions: {
+                title: "Điều kiện đổi trả",
+                content: "Chúng tôi chấp nhận đổi trả sản phẩm trong các trường hợp sau: <ul class='list-disc ml-6'><li>Sản phẩm bị lỗi do nhà sản xuất (rách, hỏng khóa kéo, sai kích cỡ).</li><li>Sản phẩm không đúng với mô tả hoặc đơn đặt hàng.</li><li>Khách hàng yêu cầu đổi size hoặc kiểu dáng (nếu sản phẩm còn mới, chưa sử dụng, còn nguyên tem mác).</li><li>Thời gian đổi trả: Trong vòng 7 ngày kể từ ngày nhận hàng.</li><li>Sản phẩm không áp dụng đổi trả: Đồ lót, đồ bơi, hoặc sản phẩm đã qua sử dụng, giặt tẩy.</li></ul>"
+            },
+            process: {
+                title: "Quy trình đổi trả",
+                content: "Để đổi trả sản phẩm, vui lòng thực hiện các bước sau: <ol class='list-decimal ml-6'><li>Liên hệ với chúng tôi qua email (support@susukids.com) hoặc số điện thoại (0905 123 456) để thông báo yêu cầu đổi trả.</li><li>Cung cấp thông tin đơn hàng và lý do đổi trả.</li><li>Gửi sản phẩm về địa chỉ: 456 Đường Trẻ Thơ, Hà Nội (phí vận chuyển do khách hàng chi trả, trừ trường hợp lỗi từ chúng tôi).</li><li>Sau khi kiểm tra, chúng tôi sẽ xử lý đổi trả hoặc hoàn tiền trong vòng 5-7 ngày làm việc.</li></ol>"
+            },
+            refundMethods: {
+                title: "Phương thức hoàn tiền",
+                content: "Chúng tôi cung cấp các phương thức hoàn tiền như sau: <ul class='list-disc ml-6'><li>Hoàn tiền qua chuyển khoản ngân hàng (vui lòng cung cấp thông tin tài khoản).</li><li>Hoàn tiền qua ví điện tử (nếu thanh toán bằng ví).</li><li>Thời gian hoàn tiền: Trong vòng 5-7 ngày làm việc sau khi nhận và kiểm tra sản phẩm trả lại.</li></ul>"
+            },
+            contact: {
+                title: "Liên hệ",
+                content: "Nếu bạn có câu hỏi về chính sách đổi trả, vui lòng liên hệ: <ul class='list-disc ml-6'><li>Email: support@susukids.com</li><li>Điện thoại: 0905 123 456</li><li>Địa chỉ: 456 Đường Trẻ Thơ, Hà Nội</li></ul>"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            fetchCartCount();
+            loadReturnPolicy();
+        });
+
+        function checkLoginStatus() {
+            fetch('/backend/api/check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    // Update user menu via user-menu.js
+                })
+                .catch(error => console.error('Error checking login status:', error));
+        }
+
+        function fetchCartCount() {
+            fetch('/backend/api/cart.php?action=count')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cart-count').textContent = data.count || 0;
+                })
+                .catch(error => console.error('Error fetching cart count:', error));
+        }
+
+        function fetchSearchSuggestions() {
+            const query = document.getElementById('search-input').value.trim();
+            const suggestionsDiv = document.getElementById('search-suggestions');
+            if (query.length < 2) {
+                suggestionsDiv.classList.add('hidden');
+                suggestionsDiv.innerHTML = '';
+                return;
+            }
+            fetch(`/backend/api/search_products.php?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsDiv.innerHTML = '';
+                    if (data.length > 0) {
+                        suggestionsDiv.classList.remove('hidden');
+                        data.forEach(product => {
+                            const div = document.createElement('div');
+                            div.className = 'flex items-center px-4 py-2 text-blue-600 cursor-pointer hover:bg-blue-50';
+                            div.innerHTML = `
+                                <img src="${product.image}" alt="${product.name}" class="w-10 h-10 rounded mr-2 object-cover">
+                                <div>
+                                    <p>${product.name}</p>
+                                    <p class="text-pink-600">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.discounted_price)}</p>
+                                </div>
+                            `;
+                            div.onclick = () => window.location.href = `product-details.html?code=${product.code}`;
+                            suggestionsDiv.appendChild(div);
+                        });
+                    } else {
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    suggestionsDiv.classList.add('hidden');
+                });
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('search-input').value.trim();
+            window.location.href = `category.html?q=${encodeURIComponent(query)}`;
+        }
+
+        function loadReturnPolicy() {
+            // Load introduction
+            document.getElementById('introduction').textContent = returnPolicyData.introduction;
+
+            // Load section titles and content
+            document.getElementById('conditions-title').textContent = returnPolicyData.conditions.title;
+            document.getElementById('conditions-content').innerHTML = returnPolicyData.conditions.content;
+
+            document.getElementById('process-title').textContent = returnPolicyData.process.title;
+            document.getElementById('process-content').innerHTML = returnPolicyData.process.content;
+
+            document.getElementById('refund-methods-title').textContent = returnPolicyData.refundMethods.title;
+            document.getElementById('refund-methods-content').innerHTML = returnPolicyData.refundMethods.content;
+
+            document.getElementById('contact-title').textContent = returnPolicyData.contact.title;
+            document.getElementById('contact-content').innerHTML = returnPolicyData.contact.content;
+        }
+
+        //logo
+        fetch("api/get_logo.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("site-logo").src = data.logo;
+        })
+        .catch(err => console.error(err));
+    </script>
+</body>
+</html>

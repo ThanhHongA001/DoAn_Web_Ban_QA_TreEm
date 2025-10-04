@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý bài viết - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-users.html" class="hover:underline">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold mb-4">Quản lý bài viết</h2>
+        <div class="mb-4 flex space-x-4">
+            <input type="text" id="blog-search" class="border p-2 rounded w-full" placeholder="Tìm kiếm bài viết...">
+        </div>
+        <button onclick="openAddBlogModal()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Thêm bài viết</button>
+        <table class="w-full bg-white shadow rounded">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-2">ID</th>
+                    <th class="p-2">Tiêu đề</th>
+                    <th class="p-2">Tóm tắt</th>
+                    <th class="p-2">Hình ảnh</th>
+                    <th class="p-2">Ngày tạo</th>
+                    <th class="p-2">Tác giả</th>
+                    <th class="p-2">Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="blog-table"></tbody>
+        </table>
+    </div>
+    <!-- Modal for Add/Edit Blog -->
+    <div id="blog-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Thêm bài viết</h3>
+            <form id="blog-form">
+                <div class="mb-4">
+                    <label for="blog-title" class="block text-gray-700 font-bold mb-2">Tiêu đề</label>
+                    <input type="text" id="blog-title" name="title" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="blog-content" class="block text-gray-700 font-bold mb-2">Nội dung</label>
+                    <textarea id="blog-content" name="content" class="w-full p-2 border rounded" rows="4" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="blog-summary" class="block text-gray-700 font-bold mb-2">Tóm tắt</label>
+                    <textarea id="blog-summary" name="summary" class="w-full p-2 border rounded" rows="2" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="blog-image" class="block text-gray-700 font-bold mb-2">Hình ảnh (URL)</label>
+                    <input type="text" id="blog-image" name="image" class="w-full p-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="blog-author" class="block text-gray-700 font-bold mb-2">Tác giả</label>
+                    <input type="text" id="blog-author" name="author_name" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeBlogModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Hủy</button>
+                    <button type="submit" id="save-blog-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Lưu</button>
+                </div>
+                <input type="hidden" id="blog-id" name="id">
+                <input type="hidden" id="blog-action" name="action" value="add">
+            </form>
+        </div>
+    </div>
+    <script>
+        let isLoading = false;
+
+        async function loadBlogs(search = '') {
+            if (isLoading) return;
+            isLoading = true;
+            try {
+                const response = await fetch(`admin-api/blogs/list.php?search=${encodeURIComponent(search)}`);
+                const data = await response.json();
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Lỗi tải bài viết');
+                }
+                const tableBody = document.getElementById('blog-table');
+                tableBody.innerHTML = '';
+                data.blogs.forEach(blog => {
+                    const createdAt = new Date(blog.created_at).toLocaleString();
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td class="p-2">${blog.id}</td>
+                            <td class="p-2">${blog.title}</td>
+                            <td class="p-2">${blog.summary}</td>
+                            <td class="p-2">${blog.image || 'Không có'}</td>
+                            <td class="p-2">${createdAt}</td>
+                            <td class="p-2">${blog.author_name || 'Không xác định'}</td>
+                            <td class="p-2">
+                                <button onclick="openEditBlogModal(${blog.id}, '${blog.title}', '${blog.content}', '${blog.summary}', '${blog.image || ''}', '${blog.author_name}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 mr-2">Sửa</button>
+                                <button onclick="deleteBlog(${blog.id})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Lỗi tải bài viết:', error);
+                alert('Lỗi tải bài viết: ' + error.message);
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function openAddBlogModal() {
+            document.getElementById('modal-title').textContent = 'Thêm bài viết';
+            document.getElementById('blog-form').reset();
+            document.getElementById('blog-id').value = '';
+            document.getElementById('blog-action').value = 'add';
+            document.getElementById('blog-modal').classList.remove('hidden');
+        }
+
+        function openEditBlogModal(id, title, content, summary, image, author_name) {
+            document.getElementById('modal-title').textContent = 'Sửa bài viết';
+            document.getElementById('blog-id').value = id;
+            document.getElementById('blog-title').value = title;
+            document.getElementById('blog-content').value = content;
+            document.getElementById('blog-summary').value = summary;
+            document.getElementById('blog-image').value = image;
+            document.getElementById('blog-author').value = author_name;
+            document.getElementById('blog-action').value = 'edit';
+            document.getElementById('blog-modal').classList.remove('hidden');
+        }
+
+        function closeBlogModal() {
+            document.getElementById('blog-modal').classList.add('hidden');
+        }
+
+        async function deleteBlog(id) {
+            if (!confirm('Bạn có chắc muốn xóa bài viết này?')) return;
+            try {
+                const response = await fetch('admin-api/blogs/delete.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert('Xóa bài viết thành công');
+                    loadBlogs(document.getElementById('blog-search').value);
+                } else {
+                    alert(data.message || 'Xóa bài viết thất bại');
+                }
+            } catch (error) {
+                console.error('Lỗi xóa bài viết:', error);
+                alert('Lỗi xóa bài viết: ' + error.message);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function initializeEventListeners() {
+            const blogSearch = document.getElementById('blog-search');
+            const blogForm = document.getElementById('blog-form');
+            const debouncedLoadBlogs = debounce((search) => {
+                loadBlogs(search);
+            }, 300);
+
+            blogSearch.addEventListener('input', (e) => {
+                debouncedLoadBlogs(e.target.value);
+            });
+
+            blogForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const action = document.getElementById('blog-action').value;
+                const id = document.getElementById('blog-id').value;
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('title', document.getElementById('blog-title').value);
+                formData.append('content', document.getElementById('blog-content').value);
+                formData.append('summary', document.getElementById('blog-summary').value);
+                formData.append('image', document.getElementById('blog-image').value);
+                formData.append('author_name', document.getElementById('blog-author').value);
+
+                try {
+                    let url = '';
+                    if (action === 'add') {
+                        url = 'admin-api/blogs/create.php';
+                    } else if (action === 'edit') {
+                        url = 'admin-api/blogs/update.php';
+                    } else {
+                        alert('Hành động không hợp lệ');
+                        return;
+                    }
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        alert(action === 'add' ? 'Thêm bài viết thành công' : 'Cập nhật bài viết thành công');
+                        closeBlogModal();
+                        loadBlogs(blogSearch.value);
+                    } else {
+                        alert(data.message || 'Lỗi khi lưu bài viết');
+                    }
+                } catch (error) {
+                    console.error('Lỗi lưu bài viết:', error);
+                    alert('Lỗi lưu bài viết: ' + error.message);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventListeners();
+            loadBlogs();
+        });
+    </script>
+</body>
+</html>

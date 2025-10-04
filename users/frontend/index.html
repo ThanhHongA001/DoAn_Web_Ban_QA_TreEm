@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Susu Kids - Cửa hàng quần áo trẻ em thời trang, chất lượng cao, phù hợp mọi lứa tuổi.">
+    <meta name="keywords" content="quần áo trẻ em, thời trang bé trai, thời trang bé gái, mua sắm trẻ em">
+    <title>Susu Kids - Quần Áo Trẻ Em</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-yellow-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+                <h1 class="ml-4 text-3xl font-bold text-blue-600">SuSu Kids Shop</h1>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Tìm quần áo cho bé..." class="p-2 pr-10 border border-blue-300 rounded-full w-72 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="fetchSearchSuggestions()" onkeypress="if(event.key === 'Enter') searchProducts()">
+                    <button onclick="searchProducts()" class="absolute right-2 top-2 text-blue-600 hover:text-blue-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    </button>
+                </div>
+                <nav class="flex space-x-6">
+                    <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+                    <a href="about.html" class="text-blue-600 hover:text-pink-600 font-semibold">Giới thiệu</a>
+                    <a href="category.html" class="text-blue-600 hover:text-pink-600 font-semibold">Sản phẩm</a>
+                    <a href="blog.html" class="text-blue-600 hover:text-pink-600 font-semibold">Blog</a>
+                    <a href="contact.html" class="text-blue-600 hover:text-pink-600 font-semibold">Liên hệ</a>
+                    <a href="cart.html" class="relative">
+                        <svg class="w-6 h-6 text-blue-600 hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-1">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="user-menu-btn" class="text-blue-600 hover:text-pink-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </button>
+                        <div id="user-menu" class="absolute hidden right-0 mt-2 w-48 bg-white border border-blue-300 rounded-lg shadow-lg">
+                            <div id="guest-menu" class="py-2">
+                                <a href="login.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng nhập</a>
+                                <a href="register.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng ký</a>
+                            </div>
+                            <div id="user-settings-menu" class="hidden py-2">
+                                <a href="account.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Thông tin cá nhân</a>
+                                <a href="orders.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đơn hàng</a>
+                                <a href="change-password.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đổi mật khẩu</a>
+                                <a href="#" id="logout-btn" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <!-- Banner -->
+<section class="relative mt-4">
+    <img id="site-banner" src="" alt="Banner SuSu Kids" class="w-full h-96 object-cover">
+    <div class="absolute inset-0 flex items-center justify-center bg-pink-600 bg-opacity-60">
+        <div class="text-center text-white">
+            <h2 class="text-5xl font-bold mb-4 drop-shadow-lg">Ưu đãi 20% cho bé yêu!</h2>
+            <a href="category.html" class="bg-yellow-400 text-pink-600 px-6 py-3 rounded-full font-semibold hover:bg-yellow-500">
+                Mua ngay cho bé
+            </a>
+        </div>
+    </div>
+</section>
+
+    <!-- Categories -->
+    <section class="container mx-auto py-12">
+        <h2 class="text-4xl font-bold text-center text-pink-600 mb-8">Danh Mục Dành Cho Bé</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="category.html?category=be-trai" class="block p-6 bg-white rounded-lg text-center shadow-md hover:shadow-lg transition">
+                <img src="assets\images\OIP (2).webp" alt="Bé Trai" class="h-32 mx-auto mb-4 rounded-full">
+                <h3 class="text-2xl font-semibold text-blue-600">Bé Trai</h3>
+                <p class="text-gray-600">Năng động & phong cách</p>
+            </a>
+            <a href="category.html?category=be-gai" class="block p-6 bg-white rounded-lg text-center shadow-md hover:shadow-lg transition">
+                <img src="assets\images\news1.jpg" alt="Bé Gái" class="h-32 mx-auto mb-4 rounded-full">
+                <h3 class="text-2xl font-semibold text-pink-600">Bé Gái</h3>
+                <p class="text-gray-600">Dễ thương & tinh tế</p>
+            </a>
+            <a href="category.html?category=so-sinh" class="block p-6 bg-white rounded-lg text-center shadow-md hover:shadow-lg transition">
+                <img src="assets\images\th.webp" alt="Sơ Sinh" class="h-32 mx-auto mb-4 rounded-full">
+                <h3 class="text-2xl font-semibold text-green-600">Sơ Sinh</h3>
+                <p class="text-gray-600">Thoải mái cho bé nhỏ</p>
+            </a>
+            <a href="category.html?category=phu-kien" class="block p-6 bg-white rounded-lg text-center shadow-md hover:shadow-lg transition">
+                <img src="assets\images\tải xuống.webp" alt="Phụ Kiện" class="h-32 mx-auto mb-4 rounded-full">
+                <h3 class="text-2xl font-semibold text-purple-600">Phụ Kiện</h3>
+                <p class="text-gray-600">Hoàn hảo cho bé</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Discount Codes -->
+    <section class="container mx-auto py-12 bg-pink-50 rounded-lg">
+        <h2 class="text-4xl font-bold text-center text-yellow-600 mb-8">Mã Giảm Giá Đặc Biệt</h2>
+        <div id="discount-codes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Discount codes will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="container mx-auto py-12">
+        <h2 class="text-4xl font-bold text-center text-blue-600 mb-8">Sản Phẩm Nổi Bật</h2>
+        <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Products will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Best-Selling Products -->
+    <section class="container mx-auto py-12 bg-gray-50 rounded-lg">
+        <h2 class="text-4xl font-bold text-center text-pink-600 mb-8">Sản Phẩm Bán Chạy Nhất</h2>
+        <div id="best-selling-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Products will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Chat Box -->
+    <div id="chat-box" class="fixed bottom-6 right-6 w-80 bg-white border border-blue-300 rounded-lg shadow-lg hidden">
+        <div class="p-4 border-b flex justify-between items-center bg-blue-50">
+            <h3 class="text-lg font-bold text-blue-600">Hỗ trợ cho bé</h3>
+            <button id="close-chat" class="text-blue-600 hover:text-blue-800">&times;</button>
+        </div>
+        <div id="chat-messages" class="p-4 h-64 overflow-y-auto bg-gray-50">
+            <!-- Messages will be dynamically loaded here -->
+        </div>
+        <form id="chat-form" class="p-4 border-t bg-white">
+            <input type="text" id="chat-input" placeholder="Nhắn tin cho chúng tôi..." class="w-full p-2 border border-blue-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-pink-400">
+            <button type="submit" class="w-full bg-pink-500 text-white p-2 rounded-lg hover:bg-pink-600">Gửi tin</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/scripts.js"></script>
+    <script src="assets/js/user-menu.js"></script>
+    <script>
+        //logo
+        fetch("api/get_logo.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("site-logo").src = data.logo;
+        })
+        .catch(err => console.error(err));
+        //banner
+        fetch("api/get_banner.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("site-banner").src = data.banner;
+        })
+        .catch(err => console.error("Lỗi tải banner:", err));
+    </script>
+</body>
+</html>

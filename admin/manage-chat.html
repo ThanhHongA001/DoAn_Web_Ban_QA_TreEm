@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý tin nhắn với người mua - SuSu Kids Shop Admin">
+    <meta name="keywords" content="admin, chat, hỗ trợ khách hàng, SuSu Kids Shop">
+    <title>Chat với người mua - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-users.html" class="hover:underline">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <!-- Chat Interface -->
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold text-blue-600 mb-4">Chat với người mua</h2>
+        <div id="error-message" class="hidden text-center text-red-600 mb-4"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- User List -->
+            <div class="bg-white p-4 rounded shadow">
+                <h3 class="text-xl font-bold text-blue-600 mb-2">Danh sách người dùng</h3>
+                <input type="text" id="chat-search" class="border border-blue-300 p-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Tìm kiếm người dùng..." oninput="filterUsers()">
+                <ul id="user-list" class="space-y-2 max-h-[400px] overflow-y-auto"></ul>
+                <p id="no-users" class="text-gray-600 text-center hidden">Không tìm thấy người dùng.</p>
+            </div>
+            <!-- Chat Box -->
+            <div class="bg-white p-4 rounded shadow">
+                <h3 class="text-xl font-bold text-blue-600 mb-2">Tin nhắn</h3>
+                <p id="no-chat" class="text-gray-600 text-center">Vui lòng chọn một người dùng để xem tin nhắn.</p>
+                <div id="chat-box" class="h-[400px] overflow-y-auto border border-blue-300 p-2 rounded mb-4 bg-gray-50 hidden"></div>
+                <div id="chat-form" class="hidden">
+                    <input type="hidden" id="user_id" value="">
+                    <textarea id="message-input" class="border border-blue-300 p-2 rounded w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Nhập tin nhắn..." rows="3"></textarea>
+                    <p id="message-error" class="text-red-600 text-sm mb-2 hidden">Vui lòng nhập tin nhắn.</p>
+                    <div class="text-right">
+                        <button onclick="sendMessage()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Gửi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for testing
+        const mockUsers = [
+            { id: 1, username: 'Nguyễn Văn A' },
+            { id: 2, username: 'Trần Thị B' },
+            { id: 3, username: 'Lê Văn C' }
+        ];
+        const mockMessages = [
+            { id: 1, user_id: 1, admin_id: null, message: 'Chào shop, mình muốn hỏi về áo thun A1B2.', sender: 'user', created_at: '2025-08-27T21:59:00+07:00' },
+            { id: 2, user_id: 1, admin_id: 1, message: 'Chào bạn, áo thun A1B2 còn hàng, bạn muốn size nào?', sender: 'admin', created_at: '2025-08-27T22:00:00+07:00' },
+            { id: 3, user_id: 2, admin_id: null, message: 'Shop có giao hàng COD không?', sender: 'user', created_at: '2025-08-27T22:01:00+07:00' },
+            { id: 4, user_id: 2, admin_id: 1, message: 'Có bạn ơi, shop hỗ trợ COD toàn quốc.', sender: 'admin', created_at: '2025-08-27T22:02:00+07:00' },
+            { id: 5, user_id: 3, admin_id: null, message: 'Mình muốn đổi sản phẩm, làm thế nào?', sender: 'user', created_at: '2025-08-27T22:03:00+07:00' }
+        ];
+
+        let allUsers = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminSession();
+        });
+
+        function checkAdminSession() {
+            fetch('admin-api/auth/check_admin_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isLoggedIn) {
+                        loadUsers();
+                    } else {
+                        window.location.href = '/frontend/admin/login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking admin session:', error);
+                    document.getElementById('error-message').textContent = 'Lỗi khi kiểm tra phiên đăng nhập admin.';
+                    document.getElementById('error-message').classList.remove('hidden');
+                });
+        }
+
+        function loadUsers() {
+            const userList = document.getElementById('user-list');
+            const noUsers = document.getElementById('no-users');
+
+            fetch('admin-api/chat/chat.php?action=users')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching users:', data.error);
+                        userList.innerHTML = '';
+                        noUsers.textContent = data.error;
+                        noUsers.classList.remove('hidden');
+                        return;
+                    }
+
+                    allUsers = data;
+                    renderUsers(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    allUsers = mockUsers;
+                    renderUsers(mockUsers);
+                    noUsers.classList.add('hidden');
+                });
+        }
+
+        function renderUsers(users) {
+            const userList = document.getElementById('user-list');
+            const noUsers = document.getElementById('no-users');
+            userList.innerHTML = '';
+
+            if (users.length === 0) {
+                noUsers.classList.remove('hidden');
+                return;
+            }
+
+            noUsers.classList.add('hidden');
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.className = 'p-2 bg-blue-50 rounded cursor-pointer hover:bg-blue-100';
+                li.textContent = user.username;
+                li.onclick = () => selectUser(user.id, user.username);
+                userList.appendChild(li);
+            });
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('chat-search').value.toLowerCase();
+            const filteredUsers = allUsers.filter(user => user.username.toLowerCase().includes(searchTerm));
+            renderUsers(filteredUsers);
+        }
+
+        function selectUser(userId, username) {
+            document.getElementById('user_id').value = userId;
+            document.getElementById('no-chat').classList.add('hidden');
+            document.getElementById('chat-box').classList.remove('hidden');
+            document.getElementById('chat-form').classList.remove('hidden');
+            document.querySelectorAll('#user-list li').forEach(li => li.classList.remove('bg-blue-200'));
+            const selectedLi = Array.from(document.querySelectorAll('#user-list li')).find(li => li.textContent === username);
+            if (selectedLi) selectedLi.classList.add('bg-blue-200');
+            loadMessages(userId);
+        }
+
+        function loadMessages(userId) {
+            const chatBox = document.getElementById('chat-box');
+            const noChat = document.getElementById('no-chat');
+
+            fetch(`admin-api/chat/chat.php?action=messages&user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching messages:', data.error);
+                        chatBox.innerHTML = '';
+                        noChat.textContent = data.error;
+                        noChat.classList.remove('hidden');
+                        chatBox.classList.add('hidden');
+                        return;
+                    }
+
+                    chatBox.innerHTML = '';
+                    if (data.length === 0) {
+                        noChat.textContent = 'Chưa có tin nhắn nào với người dùng này.';
+                        noChat.classList.remove('hidden');
+                        chatBox.classList.add('hidden');
+                        return;
+                    }
+
+                    noChat.classList.add('hidden');
+                    chatBox.classList.remove('hidden');
+                    data.forEach(message => {
+                        const messageElement = createMessageElement(message);
+                        chatBox.appendChild(messageElement);
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                    chatBox.innerHTML = '';
+                    noChat.textContent = 'Lỗi khi tải tin nhắn.';
+                    noChat.classList.remove('hidden');
+                    chatBox.classList.add('hidden');
+                    // Fallback to mock messages
+                    mockMessages.filter(m => m.user_id === userId).forEach(message => {
+                        const messageElement = createMessageElement(message);
+                        chatBox.appendChild(messageElement);
+                    });
+                    if (mockMessages.filter(m => m.user_id === userId).length > 0) {
+                        noChat.classList.add('hidden');
+                        chatBox.classList.remove('hidden');
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
+                });
+        }
+
+        function createMessageElement(message) {
+            const messageElement = document.createElement('div');
+            const isAdmin = message.sender === 'admin';
+            messageElement.className = `flex ${isAdmin ? 'justify-end' : 'justify-start'} mb-4`;
+            const date = new Date(message.created_at).toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            messageElement.innerHTML = `
+                <div class="${isAdmin ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'} p-3 rounded-lg max-w-[70%]">
+                    <p>${message.message}</p>
+                    <p class="text-xs text-gray-500 mt-1">${date}</p>
+                </div>
+            `;
+            return messageElement;
+        }
+
+        function sendMessage() {
+            const userId = document.getElementById('user_id').value;
+            const messageInput = document.getElementById('message-input');
+            const messageError = document.getElementById('message-error');
+            const message = messageInput.value.trim();
+
+            if (!userId || !message) {
+                messageError.textContent = 'Vui lòng chọn người dùng và nhập tin nhắn.';
+                messageError.classList.remove('hidden');
+                return;
+            }
+
+            messageError.classList.add('hidden');
+
+            fetch('admin-api/chat/chat.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, message })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        messageError.textContent = data.error;
+                        messageError.classList.remove('hidden');
+                        return;
+                    }
+                    messageInput.value = '';
+                    loadMessages(userId);
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                    messageError.textContent = 'Lỗi khi gửi tin nhắn.';
+                    messageError.classList.remove('hidden');
+                });
+        }
+    </script>
+</body>
+</html>

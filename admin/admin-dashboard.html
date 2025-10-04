@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-users.html" class="hover:underline">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold mb-4">Dashboard</h2>
+        <div class="mb-4 flex space-x-4">
+            <select id="time-range" class="border p-2 rounded">
+                <option value="day">Theo ngày</option>
+                <option value="month">Theo tháng</option>
+                <option value="year">Theo năm</option>
+            </select>
+            <input type="date" id="specific-date" class="border p-2 rounded hidden" value="2025-08-28">
+            <input type="month" id="specific-month" class="border p-2 rounded hidden" value="2025-08">
+            <input type="number" id="specific-year" class="border p-2 rounded hidden" min="2000" max="2099" value="2025">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="font-bold">Tổng doanh thu</h5>
+                <p id="total-revenue">0 VNĐ</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="font-bold">Số lượng bán</h5>
+                <p id="total-sold">0</p>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="font-bold">Đơn hủy</h5>
+                <p id="total-cancelled">0</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="font-bold mb-2">Biểu đồ cột (Doanh thu theo danh mục)</h5>
+                <canvas id="bar-chart"></canvas>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+                <h5 class="font-bold mb-2">Biểu đồ tròn (Tỷ lệ doanh thu theo danh mục)</h5>
+                <canvas id="pie-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleInputs() {
+            const range = document.getElementById('time-range').value;
+            document.getElementById('specific-date').classList.add('hidden');
+            document.getElementById('specific-month').classList.add('hidden');
+            document.getElementById('specific-year').classList.add('hidden');
+            if (range === 'day') {
+                document.getElementById('specific-date').classList.remove('hidden');
+            } else if (range === 'month') {
+                document.getElementById('specific-month').classList.remove('hidden');
+            } else if (range === 'year') {
+                document.getElementById('specific-year').classList.remove('hidden');
+            }
+        }
+
+        async function loadDashboard() {
+            const timeRange = document.getElementById('time-range').value;
+            const specificDate = document.getElementById('specific-date').value;
+            const specificMonth = document.getElementById('specific-month').value;
+            const specificYear = document.getElementById('specific-year').value;
+
+            const queryParams = new URLSearchParams({
+                range: timeRange,
+                date: specificDate,
+                month: specificMonth,
+                year: specificYear
+            });
+
+            try {
+                const response = await fetch(`admin-api/stats.php?${queryParams}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                document.getElementById('total-revenue').textContent = data.total_revenue.toLocaleString('vi-VN') + ' VNĐ';
+                document.getElementById('total-sold').textContent = data.total_sold;
+                document.getElementById('total-cancelled').textContent = data.total_cancelled;
+
+                // Bar Chart
+                const barCtx = document.getElementById('bar-chart').getContext('2d');
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.categories,
+                        datasets: [{
+                            label: 'Doanh thu theo danh mục',
+                            data: data.revenue_by_category,
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Doanh thu (VNĐ)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Pie Chart
+                const pieCtx = document.getElementById('pie-chart').getContext('2d');
+                new Chart(pieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.categories,
+                        datasets: [{
+                            label: 'Tỷ lệ doanh thu',
+                            data: data.revenue_by_category,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(255, 206, 86, 0.5)',
+                                'rgba(75, 192, 192, 0.5)',
+                                'rgba(153, 102, 255, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+
+                // Hide superadmin-only nav items
+                const isSuperAdmin = await checkSuperAdmin();
+                if (!isSuperAdmin) {
+                    document.getElementById('manage-users-nav').style.display = 'none';
+                    document.getElementById('manage-user-logs-nav').style.display = 'none';
+                    document.getElementById('manage-vouchers-nav').style.display = 'none';
+                    document.getElementById('manage-settings-nav').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        async function checkSuperAdmin() {
+            try {
+                const response = await fetch('admin-api/auth/check-role.php');
+                const data = await response.json();
+                return data.is_superadmin;
+            } catch (error) {
+                console.error('Error checking superadmin role:', error);
+                return false;
+            }
+        }
+
+        document.getElementById('time-range').addEventListener('change', () => {
+            toggleInputs();
+            loadDashboard();
+        });
+        document.getElementById('specific-date').addEventListener('change', loadDashboard);
+        document.getElementById('specific-month').addEventListener('change', loadDashboard);
+        document.getElementById('specific-year').addEventListener('change', loadDashboard);
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleInputs();
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>

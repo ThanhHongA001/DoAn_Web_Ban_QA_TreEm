@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đăng nhập tài khoản tại SuSu Kids - Quần áo trẻ em chất lượng cao.">
+    <meta name="keywords" content="đăng nhập, susu kids, quần áo trẻ em, đăng nhập google">
+    <title>Susu Kids - Đăng Nhập</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="bg-yellow-50 font-sans min-h-screen flex items-center justify-center">
+    <!-- Header -->
+    <header class="bg-white shadow-md fixed w-full top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="assets/images/logo1.jpg" alt="Logo SuSu Kids" class="h-16 rounded-full">
+            </div>
+            <nav class="flex space-x-6">
+                <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+                <a href="login.html" class="text-blue-600 hover:text-pink-600 font-semibold">Đăng nhập</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-6 pt-28">
+    <div class="container mx-auto p-6">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-center text-blue-600 mb-6">Đăng Nhập Tài Khoản</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-gray-700 font-semibold">Email</label>
+                    <input type="email" id="email" name="email" class="w-full p-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-gray-700 font-semibold">Mật khẩu</label>
+                    <input type="password" id="password" name="password" class="w-full p-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400" required>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember-me" name="remember_me" class="mr-2">
+                    <label for="remember-me" class="text-gray-700">Ghi nhớ đăng nhập</label>
+                </div>
+                <button type="submit" class="w-full bg-pink-500 text-white p-2 rounded-lg hover:bg-pink-600 font-semibold">Đăng Nhập</button>
+            </form>
+            <div class="mt-4 flex justify-center">
+                <div id="g_id_onload"
+                    data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                    data-callback="handleGoogleSignIn"
+                    data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
+            </div>
+            <div id="message" class="mt-4 text-center hidden"></div>
+            <p class="mt-4 text-center text-gray-600">Chưa có tài khoản? <a href="register.html" class="text-blue-600 hover:text-pink-600">Đăng ký</a></p>
+            <p class="mt-2 text-center text-gray-600">Quên mật khẩu? <a href="reset-password.html" class="text-blue-600 hover:text-pink-600">Khôi phục mật khẩu</a></p>
+        </div>
+    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('login-form');
+            const message = document.getElementById('message');
+
+            // Regular email/password login
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('remember-me').checked;
+
+                const data = { email, password, remember_me: rememberMe };
+
+                try {
+                    const response = await fetch('api/auth/login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        message.classList.remove('hidden', 'text-red-500');
+                        message.classList.add('text-green-500');
+                        message.textContent = 'Đăng nhập thành công!';
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1000);
+                        if (rememberMe) {
+                            document.cookie = `session_token=${result.session_token}; path=/; max-age=${30 * 24 * 60 * 60}`; // 30 days
+                        }
+                    } else {
+                        message.classList.remove('hidden', 'text-green-500');
+                        message.classList.add('text-red-500');
+                        message.textContent = result.message;
+                    }
+                } catch (error) {
+                    message.classList.remove('hidden', 'text-green-500');
+                    message.classList.add('text-red-500');
+                    message.textContent = 'Lỗi hệ thống, vui lòng thử lại sau.';
+                    console.error('Login error:', error);
+                }
+            });
+        });
+
+        // Google Sign-In callback
+        async function handleGoogleSignIn(response) {
+            const message = document.getElementById('message');
+            const credential = response.credential;
+
+            try {
+                // Send Google ID token to backend for verification and login
+                const loginResponse = await fetch('api/auth/google-login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential })
+                });
+                const result = await loginResponse.json();
+
+                if (result.status === 'success') {
+                    message.classList.remove('hidden', 'text-red-500');
+                    message.classList.add('text-green-500');
+                    message.textContent = result.message || 'Đăng nhập bằng Google thành công!';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                    if (result.session_token) {
+                        document.cookie = `session_token=${result.session_token}; path=/; max-age=${30 * 24 * 60 * 60}`; // 30 days
+                    }
+                } else {
+                    message.classList.remove('hidden', 'text-green-500');
+                    message.classList.add('text-red-500');
+                    message.textContent = result.message || 'Lỗi đăng nhập bằng Google.';
+                }
+            } catch (error) {
+                message.classList.remove('hidden', 'text-green-500');
+                message.classList.add('text-red-500');
+                message.textContent = 'Lỗi hệ thống, vui lòng thử lại sau.';
+                console.error('Google login error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

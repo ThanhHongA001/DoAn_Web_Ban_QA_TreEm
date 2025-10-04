@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý thao tác người dùng - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-users.html" class="hover:underline" id="manage-users-nav">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline" id="manage-user-logs-nav">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline" id="manage-vouchers-nav">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline" id="manage-settings-nav">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold mb-4">Quản lý thao tác người dùng</h2>
+        <div class="mb-4">
+            <input type="text" id="log-search" class="border p-2 rounded w-full" placeholder="Tìm kiếm thao tác...">
+        </div>
+        <table class="w-full bg-white shadow rounded">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-2">ID</th>
+                    <th class="p-2">Người dùng</th>
+                    <th class="p-2">Loại hành động</th>
+                    <th class="p-2">Mô tả</th>
+                    <th class="p-2">Thời gian</th>
+                </tr>
+            </thead>
+            <tbody id="log-table"></tbody>
+        </table>
+    </div>
+    <script>
+        async function loadUserLogs(search = '') {
+            const response = await fetch(`admin-api/user-logs/list.php?search=${search}`);
+            const data = await response.json();
+            const tableBody = document.getElementById('log-table');
+            tableBody.innerHTML = '';
+            data.logs.forEach(log => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="p-2">${log.id}</td>
+                        <td class="p-2">${log.user_name}</td>
+                        <td class="p-2">${log.action_type}</td>
+                        <td class="p-2">${log.action_description}</td>
+                        <td class="p-2">${log.created_at}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('log-search').addEventListener('input', (e) => loadUserLogs(e.target.value));
+        document.addEventListener('DOMContentLoaded', () => loadUserLogs());
+    </script>
+</body>
+</html>

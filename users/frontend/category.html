@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sản phẩm - SuSu Kids</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles1.css">
+</head>
+<body class="bg-gray-100">
+  <!-- Header (unchanged) -->
+  <header class="bg-white shadow-md fixed w-full top-0 z-10">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+        <h1 class="ml-4 text-3xl font-bold text-blue-600">SuSu Kids Shop</h1>
+      </div>
+      <div class="flex items-center space-x-6">
+        <div class="relative">
+          <input type="text" id="search-input" placeholder="Tìm quần áo cho bé..." class="p-2 pr-10 border border-blue-300 rounded-full w-72 focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="fetchSearchSuggestions()" onkeypress="if(event.key === 'Enter') searchProducts()">
+          <button onclick="searchProducts()" class="absolute right-2 top-2 text-blue-600 hover:text-blue-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+        </div>
+        <nav class="flex space-x-6">
+          <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+          <a href="about.html" class="text-blue-600 hover:text-pink-600 font-semibold">Giới thiệu</a>
+          <a href="category.html" class="text-blue-600 hover:text-pink-600 font-semibold">Sản phẩm</a>
+          <a href="blog.html" class="text-blue-600 hover:text-pink-600 font-semibold">Blog</a>
+          <a href="contact.html" class="text-blue-600 hover:text-pink-600 font-semibold">Liên hệ</a>
+          <a href="cart.html" class="relative">
+            <svg class="w-6 h-6 text-blue-600 hover:text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span id="cart-count" class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full px-1">0</span>
+          </a>
+          <div class="relative">
+            <button id="user-menu-btn" class="text-blue-600 hover:text-pink-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </button>
+            <div id="user-menu" class="absolute hidden right-0 mt-2 w-48 bg-white border border-blue-300 rounded-lg shadow-lg">
+              <div id="guest-menu" class="py-2">
+                <a href="login.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng nhập</a>
+                <a href="register.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng ký</a>
+              </div>
+              <div id="user-settings-menu" class="hidden py-2">
+                <a href="account.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Thông tin cá nhân</a>
+                <a href="orders.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đơn hàng</a>
+                <a href="change-password.html" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đổi mật khẩu</a>
+                <a href="#" id="logout-btn" class="block px-4 py-2 text-blue-600 hover:bg-blue-50">Đăng xuất</a>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search Suggestions -->
+  <div id="search-suggestions" class="hidden bg-white border border-blue-300 rounded-lg shadow-lg z-10"></div>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 pt-24 pb-12">
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Bộ lọc (Cột trái) -->
+      <aside class="md:w-1/4 bg-white p-6 rounded-2xl shadow-md">
+        <h2 class="text-xl font-bold mb-4 text-blue-600">Bộ lọc sản phẩm</h2>
+        <!-- Danh mục -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-gray-600 mb-2">Danh mục</h3>
+          <div id="filter-category" class="space-y-2"></div>
+        </div>
+        <!-- Giá -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-gray-600 mb-2">Khoảng giá</h3>
+          <select id="filter-price" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="">Tất cả</option>
+            <option value="0-50000">0 - 50,000 VNĐ</option>
+            <option value="50000-100000">50,000 - 100,000 VNĐ</option>
+            <option value="100000-250000">100,000 - 250,000 VNĐ</option>
+            <option value="250000+">Trên 250,000 VNĐ</option>
+          </select>
+        </div>
+        <!-- Kích thước -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-gray-600 mb-2">Kích thước</h3>
+          <div id="filter-size" class="space-y-2"></div>
+        </div>
+        <!-- Màu sắc -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-gray-600 mb-2">Màu sắc</h3>
+          <div id="filter-color" class="space-y-2"></div>
+        </div>
+        <!-- Nút điều khiển -->
+        <div class="flex justify-between">
+          <button onclick="clearFilters()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Xóa bộ lọc</button>
+          <button onclick="applyFilters()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition">Áp dụng</button>
+        </div>
+      </aside>
+
+      <!-- Nội dung chính -->
+      <div class="md:w-3/4">
+        <!-- Tìm kiếm & Lịch sử -->
+        <section class="mb-8">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600">Lịch sử tìm kiếm:</span>
+            <button class="text-xs text-gray-500 hover:text-red-500" onclick="clearSearchHistory()">Xóa lịch sử</button>
+          </div>
+          <div id="search-history" class="mt-2 flex flex-wrap gap-2"></div>
+        </section>
+
+        <!-- Gợi ý bằng AI -->
+        <section class="mb-10 p-6 bg-white rounded-2xl shadow">
+          <div class="flex flex-col md:flex-row md:items-end md:space-x-4">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Độ tuổi (năm)</label>
+              <input id="ai-age" type="number" min="1" max="12" value="4" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Giới tính</label>
+              <select id="ai-gender" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="boy">Bé trai</option>
+                <option value="girl">Bé gái</option>
+              </select>
+            </div>
+            <button onclick="getAIRecommendations()" class="mt-3 md:mt-0 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 transition">Gợi ý bằng AI</button>
+          </div>
+          <div id="ai-results" class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- Danh sách sản phẩm -->
+        <h2 id="product-heading" class="text-2xl font-bold mb-6 text-center text-pink-600">Danh sách sản phẩm</h2>
+        <div id="all-products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+        <div class="mt-8 text-center">
+          <button id="load-more" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition hidden">Xem thêm</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer (unchanged) -->
+  <footer class="bg-blue-600 text-white py-8 mt-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+          <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+          <ul>
+            <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+            <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+            <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+          <ul>
+            <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+            <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+            <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+            <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+          <p>Email: support@susukids.com</p>
+          <p>Phone: 0905 123 456</p>
+          <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+        </div>
+      </div>
+      <div class="mt-8 text-center">
+        <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/user-menu.js"></script>
+  <script>
+    // Biến toàn cục để lưu trữ sản phẩm và trạng thái phân trang
+    let allProducts = [];
+    let currentPage = 1;
+    const productsPerPage = 6;
+
+    // ================== LỊCH SỬ TÌM KIẾM (localStorage) ==================
+    const HISTORY_KEY = 'searchHistory';
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
+    }
+    function saveHistory(term) {
+      if (!term) return;
+      let hist = getHistory().filter(x => x.toLowerCase() !== term.toLowerCase());
+      hist.unshift(term);
+      if (hist.length > 8) hist = hist.slice(0, 8);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+      renderHistory();
+    }
+    function clearSearchHistory() {
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    }
+    function renderHistory() {
+      const wrap = document.getElementById('search-history');
+      if (!wrap) return;
+      const hist = getHistory();
+      wrap.innerHTML = hist.map(h => `
+        <button class="px-3 py-1 rounded-full border text-sm hover:bg-blue-50"
+          onclick="document.getElementById('search-input').value='${h.replace(/'/g,"&#39;")}'; searchProducts();">
+          ${h}
+        </button>
+      `).join('');
+    }
+    renderHistory();
+
+    // ================== GỢI Ý TỪ KHÓA (api/category/search_suggestions.php) ==================
+    let suggestAbort;
+    async function fetchSearchSuggestions() {
+      const box = document.getElementById('search-input');
+      const panel = document.getElementById('search-suggestions');
+      const q = box.value.trim();
+      if (!panel) return;
+      if (q.length < 2) { panel.classList.add('hidden'); panel.innerHTML=''; return; }
+      try {
+        if (suggestAbort) suggestAbort.abort();
+        suggestAbort = new AbortController();
+        const res = await fetch(`api/category/search_suggestions.php?q=${encodeURIComponent(q)}`, {signal: suggestAbort.signal});
+        const items = await res.json();
+        const hist = getHistory().filter(h => h.toLowerCase().includes(q.toLowerCase())).slice(0, 3)
+          .map(h => ({ code: null, name: h, _isHistory: true }));
+        const merged = [...hist, ...items];
+        if (!merged.length) { panel.classList.add('hidden'); panel.innerHTML=''; return; }
+        panel.innerHTML = merged.map(it => `
+          <div class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between"
+               onclick="onSelectSuggestion('${(it.name||'').replace(/'/g,"&#39;")}', '${it.code ?? ''}')">
+            <span>${it._isHistory ? '🕘 ' : '🔎 '}${it.name}</span>
+            ${it.code ? `<span class="text-xs text-gray-500">#${it.code}</span>` : ''}
+          </div>
+        `).join('');
+        panel.classList.remove('hidden');
+        const header = document.querySelector('header');
+        const footer = document.querySelector('footer');
+        const headerHeight = header.offsetHeight;
+        const footerRect = footer.getBoundingClientRect();
+        const inputRect = box.getBoundingClientRect();
+        const availableHeight = window.innerHeight - headerHeight - Math.max(0, window.innerHeight - footerRect.top);
+        panel.style.position = 'fixed';
+        panel.style.top = `${headerHeight}px`;
+        panel.style.left = `${inputRect.left}px`;
+        panel.style.width = `${inputRect.width}px`;
+        panel.style.maxHeight = `${Math.min(300, availableHeight - 20)}px`;
+        if (availableHeight <= 50) {
+          panel.classList.add('hidden');
+        }
+      } catch(e) {
+        panel.classList.add('hidden'); panel.innerHTML='';
+      }
+    }
+    function onSelectSuggestion(name, code) {
+      const box = document.getElementById('search-input');
+      box.value = name;
+      document.getElementById('search-suggestions').classList.add('hidden');
+      if (code) {
+        window.location.href = `product-details.html?code=${code}`;
+      } else {
+        searchProducts();
+      }
+    }
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('search-suggestions');
+      const box = document.getElementById('search-input');
+      if (!panel || !box) return;
+      if (!panel.contains(e.target) && e.target !== box) {
+        panel.classList.add('hidden');
+      }
+    });
+
+    // ================== TÌM KIẾM SẢN PHẨM (api/category/search.php) ==================
+    async function searchProducts() {
+      const q = (document.getElementById('search-input')?.value || '').trim();
+      if (!q) return;
+      saveHistory(q);
+      try {
+        const res = await fetch(`api/category/search.php?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        allProducts = data;
+        currentPage = 1;
+        renderProductsTo('#all-products', allProducts.slice(0, productsPerPage), `Kết quả cho “${q}”`);
+        updateLoadMoreButton();
+      } catch (e) {
+        console.error('Search error', e);
+      }
+    }
+
+    // ================== GỢI Ý BẰNG AI (api/category/recommend.php) ==================
+    async function getAIRecommendations() {
+      const age = parseInt(document.getElementById('ai-age').value || '3', 10);
+      const gender = document.getElementById('ai-gender').value || 'boy';
+      try {
+        const res = await fetch(`api/category/recommend.php?age=${age}&gender=${encodeURIComponent(gender)}`);
+        const data = await res.json();
+        renderProductsTo('#ai-results', data, `Gợi ý cho ${gender==='boy'?'bé trai':'bé gái'} ${age} tuổi`, true);
+      } catch (e) {
+        console.error('AI recommend error', e);
+      }
+    }
+
+    // ================== HÀM DÙNG CHUNG: RENDER SẢN PHẨM ==================
+    function renderProductsTo(selector, list, heading = '', showScore = false) {
+      const wrap = document.querySelector(selector);
+      if (!wrap) return;
+      if (heading) {
+        const headingEl = document.getElementById('product-heading');
+        if (headingEl) headingEl.textContent = heading;
+      }
+      wrap.innerHTML = (list || []).map(p => {
+        const price = parseFloat(p.price||0);
+        const discounted = price - (price * (parseFloat(p.discount||0) / 100));
+        const scoreTag = showScore && typeof p.ai_score !== 'undefined'
+          ? `<div class="mt-1 text-xs text-gray-500">AI score: ${p.ai_score}</div>`
+          : '';
+        return `
+          <div class="product-card bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+            <img src="${p.image}" alt="${p.name}" class="h-40 w-full object-cover mx-auto mb-4 rounded">
+            <h3 class="text-lg font-semibold text-blue-600">${p.name}</h3>
+            <div class="text-gray-600 mt-1 text-sm">${p.category ? p.category : ''}</div>
+            <div class="text-gray-600 mt-2">
+              <span class="${price !== discounted ? 'line-through' : ''}">
+                ${new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(price)}
+              </span>
+              <span class="text-pink-600 font-bold ml-2">
+                ${new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(discounted)}
+              </span>
+            </div>
+            ${scoreTag}
+            <a href="product-details.html?code=${p.code}" class="mt-3 inline-block bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600">Xem chi tiết</a>
+          </div>
+        `;
+      }).join('');
+      if (!list || list.length === 0) {
+        wrap.innerHTML = `<div class="col-span-full text-center text-gray-500">Không tìm thấy sản phẩm phù hợp.</div>`;
+      }
+    }
+
+    // ================== BỘ LỌC SẢN PHẨM ==================
+    async function fetchCategories() {
+      try {
+        const res = await fetch('api/category/filter.php?action=get_categories');
+        const categories = await res.json();
+        const container = document.getElementById('filter-category');
+        container.innerHTML = categories.map(c => `
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" value="${c.id}" class="filter-checkbox rounded text-blue-600 focus:ring-blue-400">
+            <span class="text-sm text-gray-700">${c.name}</span>
+          </label>
+        `).join('');
+      } catch (e) {
+        console.error('Error fetching categories:', e);
+      }
+    }
+
+    async function fetchSizes() {
+      try {
+        const res = await fetch('api/category/filter.php?action=get_sizes');
+        const sizes = await res.json();
+        const container = document.getElementById('filter-size');
+        container.innerHTML = sizes.map(s => `
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" value="${s.size}" class="filter-checkbox rounded text-blue-600 focus:ring-blue-400">
+            <span class="text-sm text-gray-700">${s.size}</span>
+          </label>
+        `).join('');
+      } catch (e) {
+        console.error('Error fetching sizes:', e);
+      }
+    }
+
+    async function fetchColors() {
+      try {
+        const res = await fetch('api/category/filter.php?action=get_colors');
+        const colors = await res.json();
+        const container = document.getElementById('filter-color');
+        container.innerHTML = colors.map(c => `
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" value="${c.color}" class="filter-checkbox rounded text-blue-600 focus:ring-blue-400">
+            <span class="text-sm text-gray-700">${c.color}</span>
+          </label>
+        `).join('');
+      } catch (e) {
+        console.error('Error fetching colors:', e);
+      }
+    }
+
+    async function applyFilters() {
+      const categories = Array.from(document.querySelectorAll('#filter-category .filter-checkbox:checked')).map(cb => cb.value);
+      const price = document.getElementById('filter-price').value;
+      const sizes = Array.from(document.querySelectorAll('#filter-size .filter-checkbox:checked')).map(cb => cb.value);
+      const colors = Array.from(document.querySelectorAll('#filter-color .filter-checkbox:checked')).map(cb => cb.value);
+      const searchQuery = document.getElementById('search-input').value.trim();
+
+      const params = new URLSearchParams();
+      params.append('action', 'filter_products');
+      if (categories.length) params.append('categories', categories.join(','));
+      if (price) params.append('price', price);
+      if (searchQuery) params.append('q', searchQuery);
+
+      try {
+        let products = [];
+        const res = await fetch(`api/category/filter.php?${params.toString()}`);
+        const data = await res.json();
+        if (data.success) {
+          products = data.data;
+          if (sizes.length || colors.length) {
+            products = await Promise.all(products.map(async p => {
+              const variants = await fetchVariants(p.code);
+              const matches = variants.some(v => 
+                (!sizes.length || sizes.includes(v.size)) && 
+                (!colors.length || colors.includes(v.color))
+              );
+              return matches ? p : null;
+            }));
+            products = products.filter(p => p !== null);
+          }
+        }
+        allProducts = products;
+        currentPage = 1;
+        renderProductsTo('#all-products', allProducts.slice(0, productsPerPage), `Kết quả lọc`);
+        updateLoadMoreButton();
+      } catch (e) {
+        console.error('Filter error:', e);
+      }
+    }
+
+    async function fetchVariants(productCode) {
+      try {
+        const res = await fetch(`api/category/filter.php?action=get_variants&code=${productCode}`);
+        const variants = await res.json();
+        return variants;
+      } catch (e) {
+        console.error('Error fetching variants:', e);
+        return [];
+      }
+    }
+
+    function clearFilters() {
+      document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('filter-price').value = '';
+      document.getElementById('search-input').value = '';
+      fetchProducts();
+    }
+
+    async function fetchProducts() {
+      try {
+        const res = await fetch("api/category/get_products.php");
+        const data = await res.json();
+        allProducts = data;
+        currentPage = 1;
+        renderProductsTo('#all-products', allProducts.slice(0, productsPerPage), 'Danh sách sản phẩm');
+        updateLoadMoreButton();
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    }
+
+    // Cập nhật trạng thái nút "Xem thêm"
+    function updateLoadMoreButton() {
+      const loadMoreBtn = document.getElementById('load-more');
+      if (allProducts.length > currentPage * productsPerPage) {
+        loadMoreBtn.classList.remove('hidden');
+      } else {
+        loadMoreBtn.classList.add('hidden');
+      }
+    }
+
+    // Xử lý sự kiện nhấn "Xem thêm"
+    function loadMoreProducts() {
+      currentPage++;
+      const start = (currentPage - 1) * productsPerPage;
+      const end = start + productsPerPage;
+      const moreProducts = allProducts.slice(0, end);
+      renderProductsTo('#all-products', moreProducts, document.getElementById('product-heading').textContent);
+      updateLoadMoreButton();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchCategories();
+      fetchSizes();
+      fetchColors();
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+      if (query) {
+        document.getElementById('search-input').value = query;
+        searchProducts();
+      } else {
+        fetchProducts();
+      }
+      document.getElementById('load-more').addEventListener('click', loadMoreProducts);
+    });
+
+    window.addEventListener('scroll', () => {
+      const panel = document.getElementById('search-suggestions');
+      if (!panel.classList.contains('hidden')) {
+        panel.classList.add('hidden');
+      }
+    });
+
+    window.addEventListener('resize', fetchSearchSuggestions);
+
+    // Logo fetch (unchanged)
+    fetch("api/get_logo.php")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("site-logo").src = data.logo;
+      })
+      .catch(err => console.error(err));
+  </script>
+</body>
+</html>

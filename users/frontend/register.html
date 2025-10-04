@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Đăng ký tài khoản tại SuSu Kids - Quần áo trẻ em chất lượng cao.">
+  <meta name="keywords" content="đăng ký, susu kids, quần áo trẻ em">
+  <title>Susu Kids - Đăng Ký</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="bg-yellow-50 font-sans min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md fixed w-full top-0 z-10">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <img id="site-logo" src="" alt="Logo SuSu Kids" class="h-16 rounded-full">
+      <nav class="flex space-x-6">
+        <a href="index.html" class="text-blue-600 hover:text-pink-600 font-semibold">Trang chủ</a>
+        <a href="login.html" class="text-blue-600 hover:text-pink-600 font-semibold">Đăng nhập</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Form đăng ký -->
+  <main class="flex-grow container mx-auto p-6 pt-28">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-center text-blue-600 mb-6">Đăng Ký Tài Khoản</h2>
+      <form id="register-form" class="space-y-4">
+        <div>
+          <label for="name" class="block text-gray-700 font-semibold">Tên đầy đủ</label>
+          <input type="text" id="name" name="name" class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-pink-400" required>
+        </div>
+        <div>
+          <label for="email" class="block text-gray-700 font-semibold">Email</label>
+          <input type="email" id="email" name="email" class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-pink-400" required>
+        </div>
+        <div>
+          <label for="password" class="block text-gray-700 font-semibold">Mật khẩu</label>
+          <input type="password" id="password" name="password" class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-pink-400" required minlength="6">
+        </div>
+        <div>
+          <label for="confirm-password" class="block text-gray-700 font-semibold">Xác nhận mật khẩu</label>
+          <input type="password" id="confirm-password" name="confirm_password" class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-pink-400" required>
+        </div>
+        <div>
+          <label for="phone" class="block text-gray-700 font-semibold">Số điện thoại</label>
+          <input type="tel" id="phone" name="phone" class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-pink-400">
+        </div>
+        <div>
+          <label for="address" class="block text-gray-700 font-semibold">Địa chỉ</label>
+          <textarea id="address" name="address" class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-pink-400" rows="3"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-pink-500 text-white p-2 rounded-lg hover:bg-pink-600 font-semibold">Đăng Ký</button>
+      </form>
+      <div id="message" class="mt-4 text-center hidden"></div>
+      <p class="mt-4 text-center text-gray-600">
+        Đã có tài khoản? <a href="login.html" class="text-blue-600 hover:text-pink-600">Đăng nhập</a>
+      </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SuSu Kids</h3>
+                    <p>Thời trang trẻ em chất lượng, an toàn cho bé yêu.</p>
+                    <ul>
+                        <li><a href="about.html" class="text-yellow-400 hover:text-yellow-300">Giới thiệu</a></li>
+                        <li><a href="baomat.html" class="text-yellow-400 hover:text-yellow-300">Chính sách bảo mật</a></li>
+                        <li><a href="doitra.html" class="text-yellow-400 hover:text-yellow-300">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="category.html" class="hover:text-yellow-400">Sản phẩm</a></li>
+                        <li><a href="blog.html" class="hover:text-yellow-400">Blog</a></li>
+                        <li><a href="contact.html" class="hover:text-yellow-400">Liên hệ</a></li>
+                        <li><a href="size.html" class="hover:text-yellow-400">Hướng dẫn chọn size</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Liên hệ</h3>
+                    <p>Email: support@susukids.com</p>
+                    <p>Phone: 0905 123 456</p>
+                    <p>Address: 456 Đường Trẻ Thơ, Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>© 2025 SuSu Kids Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('register-form');
+            const message = document.getElementById('message');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const phone = document.getElementById('phone').value;
+                const address = document.getElementById('address').value;
+
+                const data = { name, email, password, confirm_password: confirmPassword, phone, address };
+
+                try {
+                     const response = await fetch('api/auth/register.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        message.classList.remove('hidden', 'text-red-500');
+                        message.classList.add('text-green-500');
+                        message.innerHTML = `
+                            <p>${result.message}</p>
+                            <a href="index.html" class="mt-2 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Quay lại Trang chủ</a>
+                        `;
+                        form.reset();
+                    } else {
+                        message.classList.remove('hidden', 'text-green-500');
+                        message.classList.add('text-red-500');
+                        message.textContent = result.message;
+                    }
+                } catch (error) {
+                    message.classList.remove('hidden', 'text-green-500');
+                    message.classList.add('text-red-500');
+                    message.textContent = 'Lỗi hệ thống, vui lòng thử lại sau.';
+                    console.error('Registration error:', error);
+                }
+            });
+        });
+
+        //logo
+        fetch("api/get_logo.php")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("site-logo").src = data.logo;
+        })
+        .catch(err => console.error(err));
+    </script>
+</body>
+</html>

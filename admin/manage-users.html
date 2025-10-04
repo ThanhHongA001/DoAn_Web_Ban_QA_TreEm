@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-users.html" class="hover:underline">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold mb-4">Quản lý người dùng</h2>
+        <div class="mb-4 flex space-x-4">
+            <input type="text" id="user-search" class="border p-2 rounded w-full" placeholder="Tìm kiếm người dùng...">
+        </div>
+        <button onclick="openAddUserModal()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Thêm người dùng</button>
+        <table class="w-full bg-white shadow rounded">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-2">Tên</th>
+                    <th class="p-2">Email</th>
+                    <th class="p-2">Số điện thoại</th>
+                    <th class="p-2">Địa chỉ</th>
+                    <th class="p-2">Lần đăng nhập cuối</th>
+                    <th class="p-2">Trạng thái</th>
+                    <th class="p-2">Số lần thử sai</th>
+                    <th class="p-2">Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="user-table"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Add/Edit User -->
+    <div id="user-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Thêm người dùng</h3>
+            <form id="user-form">
+                <div class="mb-4">
+                    <label for="user-name" class="block text-gray-700 font-bold mb-2">Tên</label>
+                    <input type="text" id="user-name" name="name" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="user-email" class="block text-gray-700 font-bold mb-2">Email</label>
+                    <input type="email" id="user-email" name="email" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="user-password" class="block text-gray-700 font-bold mb-2">Mật khẩu</label>
+                    <input type="password" id="user-password" name="password" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="user-phone" class="block text-gray-700 font-bold mb-2">Số điện thoại</label>
+                    <input type="text" id="user-phone" name="phone" class="w-full p-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="user-address" class="block text-gray-700 font-bold mb-2">Địa chỉ</label>
+                    <textarea id="user-address" name="address" class="w-full p-2 border rounded" rows="3"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="user-active" class="block text-gray-700 font-bold mb-2">Trạng thái</label>
+                    <select id="user-active" name="is_active" class="w-full p-2 border rounded" required>
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Không hoạt động</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="user-failed-attempts" class="block text-gray-700 font-bold mb-2">Số lần thử sai</label>
+                    <input type="number" id="user-failed-attempts" name="failed_attempts" min="0" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeUserModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Hủy</button>
+                    <button type="submit" id="save-user-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Lưu</button>
+                </div>
+                <input type="hidden" id="user-id" name="id">
+                <input type="hidden" id="user-action" name="action" value="add">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        async function loadUsers(search = '') {
+            if (isLoading) return;
+            isLoading = true;
+            try {
+                const response = await fetch(`admin-api/users/list.php?search=${encodeURIComponent(search)}`);
+                const data = await response.json();
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Lỗi tải người dùng');
+                }
+                const tableBody = document.getElementById('user-table');
+                tableBody.innerHTML = '';
+                // Deduplicate by id using a Map
+                const uniqueUsers = new Map();
+                data.users.forEach(user => {
+                    if (!uniqueUsers.has(user.id)) {
+                        uniqueUsers.set(user.id, user);
+                    }
+                });
+                uniqueUsers.forEach(user => {
+                    const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Chưa đăng nhập';
+                    const status = user.is_active ? 'Hoạt động' : 'Không hoạt động';
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td class="p-2">${user.name || ''}</td>
+                            <td class="p-2">${user.email || ''}</td>
+                            <td class="p-2">${user.phone || ''}</td>
+                            <td class="p-2">${user.address || ''}</td>
+                            <td class="p-2">${lastLogin}</td>
+                            <td class="p-2">${status}</td>
+                            <td class="p-2">${user.failed_attempts}</td>
+                            <td class="p-2">
+                                <button onclick="openEditUserModal(${user.id}, '${user.name || ''}', '${user.email || ''}', '${user.phone || ''}', '${user.address || ''}', '${user.last_login || ''}', ${user.is_active}, ${user.failed_attempts})" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Cập nhập</button>
+                                <button onclick="deleteUser(${user.id})" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Lỗi tải người dùng:', error);
+                alert('Lỗi tải người dùng: ' + error.message);
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function openAddUserModal() {
+            document.getElementById('modal-title').textContent = 'Thêm người dùng';
+            document.getElementById('user-form').reset();
+            document.getElementById('user-id').value = '';
+            document.getElementById('user-action').value = 'add';
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function openEditUserModal(id, name, email, phone, address, last_login, is_active, failed_attempts) {
+            document.getElementById('modal-title').textContent = 'Sửa người dùng';
+            document.getElementById('user-id').value = id;
+            document.getElementById('user-name').value = name;
+            document.getElementById('user-email').value = email;
+            document.getElementById('user-phone').value = phone;
+            document.getElementById('user-address').value = address;
+            document.getElementById('user-active').value = is_active;
+            document.getElementById('user-failed-attempts').value = failed_attempts;
+            document.getElementById('user-action').value = 'edit';
+            document.getElementById('user-modal').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-modal').classList.add('hidden');
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Bạn có chắc muốn xóa người dùng này?')) return;
+            try {
+                const response = await fetch('admin-api/users/delete.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert('Xóa người dùng thành công');
+                    loadUsers(document.getElementById('user-search').value);
+                } else {
+                    alert(data.message || 'Xóa người dùng thất bại');
+                }
+            } catch (error) {
+                console.error('Lỗi xóa người dùng:', error);
+                alert('Lỗi xóa người dùng: ' + error.message);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function initializeEventListeners() {
+            const userSearch = document.getElementById('user-search');
+            const userForm = document.getElementById('user-form');
+
+            const debouncedLoadUsers = debounce((search) => {
+                loadUsers(search);
+            }, 300);
+
+            userSearch.addEventListener('input', (e) => {
+                debouncedLoadUsers(e.target.value);
+            });
+
+            userForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const action = document.getElementById('user-action').value;
+                const id = document.getElementById('user-id').value;
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('name', document.getElementById('user-name').value);
+                formData.append('email', document.getElementById('user-email').value);
+                formData.append('password', document.getElementById('user-password').value);
+                formData.append('phone', document.getElementById('user-phone').value);
+                formData.append('address', document.getElementById('user-address').value);
+                formData.append('is_active', document.getElementById('user-active').value);
+                formData.append('failed_attempts', document.getElementById('user-failed-attempts').value);
+
+                try {
+                    let url = '';
+                    if (action === 'add') {
+                        url = 'admin-api/users/create.php';
+                    } else if (action === 'edit') {
+                        url = 'admin-api/users/update.php';
+                    } else {
+                        alert('Hành động không hợp lệ');
+                        return;
+                    }
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        alert(action === 'add' ? 'Thêm người dùng thành công' : 'Cập nhật người dùng thành công');
+                        closeUserModal();
+                        loadUsers(userSearch.value);
+                    } else {
+                        alert(data.message || 'Lỗi khi lưu người dùng');
+                    }
+                } catch (error) {
+                    console.error('Lỗi lưu người dùng:', error);
+                    alert('Lỗi lưu người dùng: ' + error.message);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventListeners();
+            loadUsers();
+        });
+    </script>
+</body>
+</html>

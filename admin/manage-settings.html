@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt - SuSu Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/admin-styles.css">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="admin-dashboard.html" class="text-2xl font-bold">SuSu Kids Admin</a>
+            <div class="space-x-4">
+                <a href="admin-dashboard.html" class="hover:underline">Dashboard</a>
+                <a href="manage-categories.html" class="hover:underline">Danh mục</a>
+                <a href="manage-products.html" class="hover:underline">Sản phẩm</a>
+                <a href="manage-users.html" class="hover:underline" id="manage-users-nav">Người dùng</a>
+                <a href="manage-orders.html" class="hover:underline">Đơn hàng</a>
+                <a href="manage-user-logs.html" class="hover:underline" id="manage-user-logs-nav">Thao tác người dùng</a>
+                <a href="manage-vouchers.html" class="hover:underline" id="manage-vouchers-nav">Voucher</a>
+                <a href="manage-chat.html" class="hover:underline">Chat</a>
+                <a href="manage-settings.html" class="hover:underline" id="manage-settings-nav">Cài đặt</a>
+                <a href="manage-blogs.html" class="hover:underline">Blog</a>
+                <a href="admin-api/auth/admin-logout.php" class="hover:underline">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto p-4">
+        <h2 class="text-3xl font-bold mb-4">Cài đặt hệ thống</h2>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="text-xl font-bold mb-4">Cập nhật Logo và Banner</h3>
+            <form id="settings-form" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Logo hiện tại</label>
+                    <img id="current-logo" src="assets/images/logo1.jpg" alt="Logo hiện tại" class="h-16 mb-2">
+                    <input type="file" id="logo-upload" name="logo" accept="image/*" class="border p-2 rounded w-full">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Banner hiện tại</label>
+                    <img id="current-banner" src="assets/images/Ảnh9.jpg" alt="Banner hiện tại" class="w-full h-32 object-cover mb-2">
+                    <input type="file" id="banner-upload" name="banner" accept="image/*" class="border p-2 rounded w-full">
+                </div>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Lưu thay đổi</button>
+            </form>
+            <div id="message" class="mt-4 text-center"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load current settings
+            fetch('admin-api/settings/settings.php?action=get')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('current-logo').src = data.settings.logo || 'assets/images/logo1.jpg';
+                        document.getElementById('current-banner').src = data.settings.banner || 'assets/images/Ảnh9.jpg';
+                    } else {
+                        document.getElementById('message').textContent = data.message || 'Lỗi tải cài đặt';
+                        document.getElementById('message').className = 'mt-4 text-center text-red-600';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading settings:', error);
+                    document.getElementById('message').textContent = 'Lỗi tải cài đặt';
+                    document.getElementById('message').className = 'mt-4 text-center text-red-600';
+                });
+
+            // Handle form submission
+            document.getElementById('settings-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData();
+                const logoFile = document.getElementById('logo-upload').files[0];
+                const bannerFile = document.getElementById('banner-upload').files[0];
+                if (logoFile) formData.append('logo', logoFile);
+                if (bannerFile) formData.append('banner', bannerFile);
+
+                try {
+                    const response = await fetch('admin-api/settings/settings.php?action=update', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    const messageDiv = document.getElementById('message');
+                    if (data.status === 'success') {
+                        messageDiv.textContent = 'Cập nhật thành công!';
+                        messageDiv.className = 'mt-4 text-center text-green-600';
+                        if (logoFile) document.getElementById('current-logo').src = URL.createObjectURL(logoFile);
+                        if (bannerFile) document.getElementById('current-banner').src = URL.createObjectURL(bannerFile);
+                    } else {
+                        messageDiv.textContent = data.message || 'Cập nhật thất bại';
+                        messageDiv.className = 'mt-4 text-center text-red-600';
+                    }
+                } catch (error) {
+                    console.error('Error updating settings:', error);
+                    document.getElementById('message').textContent = 'Lỗi cập nhật cài đặt';
+                    document.getElementById('message').className = 'mt-4 text-center text-red-600';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
